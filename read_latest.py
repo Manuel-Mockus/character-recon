@@ -76,8 +76,8 @@ def testNorm(Tab,Centroids):
     plt.bar([i for i in range(20)],pourcentages)
     plt.show()
 
-testNorm(I2,L)
 
+#testNorm(I2,L)
 #plt.bar([i for i in range(10)],pourcentage(I2,L,2))
 #plt.show()
 
@@ -111,4 +111,7 @@ def split(I,train_prop) :
 
 training_set, test_set = split(I,0.01)
 bases = svd_base(training_set)
+b0 = bases[3][0].reshape((28,28))
+plt.imshow(b0,cmap='gray')
+plt.show()
 #print(test_svd(test_set[0][0],bases))
