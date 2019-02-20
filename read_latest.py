@@ -90,7 +90,7 @@ def testNorm(Test,Centroids,Nb):
     pourcentages.append(M)
     for i in range(1,Nb):
         k = (pourcentage(Test,Centroids,i))
-        print('Processing Norme :',i ,"Out of ",Nb)
+        print('Processing Norm :',i ,"Out of",Nb)
         #print(k)
         M = sum(k)/10
         k. append(M)
