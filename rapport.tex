@@ -4,7 +4,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx} 
 \usepackage{amsmath}
- 
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert} %pour écrire une norme:  \norm{...}
 
 \author{...}
 \title{Reconnaissance de caractères}
@@ -22,7 +22,7 @@
 %\end{resume}
 
 \chapter{Introduction}
-Le coeur du projet est d'écrire un code permettant de reconnaître automatiquement des caractères manuscrits, le but étant de familiariser avec des méthodes usuelles de reconnaissance de forme en les implémentant pour un cas particulier et en en comprenant la théorie. \\
+Le coeur du projet est d'écrire un code permettant de reconnaître automatiquement des caractères manuscrits, le but étant de se familiariser avec des méthodes usuelles de reconnaissance de forme en les implémentant pour un cas particulier et en en comprenant la théorie. \\
 
 Les caractères à analyser seront ici des chiffres de 1 à 9 sous forme de vecteurs de taille $(28\times28,1)$ à valeurs entières comprise entre 0 et 255 : chaque vecteur représente une image de taille $28\times28$ en nuance de gris (0 = noir, blanc = 255). Nous disposons d'une base de données de 70000 chiffres manuscrits labelisés stockés sous le format décrit précédemment.\\
  
@@ -37,7 +37,17 @@ Nous avons ensuite divisé la base de donnée afin que chacun des membre du grou
 
 
 \chapter{Première méthode : calcul des écarts à la moyenne} 
+\section{Théorie}
+La première méthode étudiée est une approche assez intuitive du problème.\\
+Dans un premier temps, à partir du set d'entrainement, pour chaque chiffre on crée une image moyenne de toutes les image du chiffre : le barycentre (terme exacte?)de tous les vecteurs de ce chiffre.\\Une image inconnue est alors classée en cherchant l'image moyenne telle que l'écart de ressemblance entre l'image à tester et cette image soit minimum.\\
+
+On définit l'écart de ressemblance entre deux images comme étant la distance dans une certaine norme choisie entre les deux vecteurs $x$ et $y$ de $\textbf{R}^{784}$ correspondant aux images : $$d(x,y) = \norm{x-y}$$ Le choix de la norme est son influence sur les résultat est détaillé dans la partie pratique.
+
+\section{Pratique}
 \chapter{Deuxième méthode : utilisation de la décomposition en valeurs singulière (SVD)}
+\subsection{Théorie}
+\subsection{Pratique}
+
 \chapter{Conclusion}
 
 \bibliography{exemple} % Utilise exemple.bib
