@@ -44,6 +44,12 @@ Dans un premier temps, à partir du set d'entrainement, pour chaque chiffre on c
 On définit l'écart de ressemblance entre deux images comme étant la distance dans une certaine norme choisie entre les deux vecteurs $x$ et $y$ de $\textbf{R}^{784}$ correspondant aux images : $$d(x,y) = \norm{x-y}$$ Le choix de la norme est son influence sur les résultat est détaillé dans la partie pratique.
 
 \section{Pratique}
+Pour analyser l'efficacité de notre programme nous avons choisi d'observer deux types de données, le taux de réussite global de notre programme pour différentes normes, et le taux de réussite de notre programme pour chaque chiffre avec une norme fixe.\\
+On a alors rapidement constaté grace au graphe ci dessous, que les normes infini et 1 sont nettement moins efficaces que les autres, la norme la plus efficace semblant être la norme 3, puis on peut constater que l'efficacité décroit jusqu'à atteindre assyptotiquement celle de la norme infinie.\\%inserer graphique avec toutes les normes
+Pour essayer de comprendre ce résultat il est intéressant de regarder plus en détails sur quels chiffres notre programme échoue pour les normes 1,2 et infini.%insérer graphique de réussite pour les trois normes
+
+
+
 \chapter{Deuxième méthode : utilisation de la décomposition en valeurs singulière (SVD)}
 \subsection{Théorie}
 \subsection{Pratique}
