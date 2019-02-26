@@ -44,6 +44,8 @@ def Separation(I):
 
     return Training,Test
 
+
+
 def Afficher(vect):
     V = vect.reshape((28,28))
     plt.imshow(V, cmap = 'gray',vmin = 0 ,vmax = 255)
@@ -117,23 +119,6 @@ def Report(Report_p):
         print(i,'     ', *R[i] , sep ="|")
 
 
-################################
-########### MAIN ###############
-################################
-
-Training,Test = Separation(I)
-
-L = centroids(Training)
-
-Afficher(I[2][3])
-
-Report_p = testNorm(I,L,5)
-
-Report(Report_p)
-
-
-
-###############################
 #SVD
 def svd_base(training) :
     bases = [[] for i in range(10)]
@@ -142,11 +127,22 @@ def svd_base(training) :
         bases[i] = np.linalg.svd(A)[0]
     return bases
 
-def test_svd(image,base_svd) :#à corriger
-    least_squares = [np.linalg.norm(np.matmul(np.identity(28*28)-np.matmul(base_svd[i],base_svd[i].transpose()),np.array([image]).transpose()),2) for i in range(10)]
-    print(least_squares)
-    return np.argmin(least_squares)
+def test_svd(image,M_k,threshold) :#à corriger
+    least_squares = [np.linalg.norm(np.matmul(M_k[i],np.array([image]).transpose()),2) for i in range(10)]
+    k = np.argmin(least_squares)
+    min_1 = least_squares.pop(k)
+    min_2 = np.min(least_squares)
+    if(min_1 > min_2*threshold):
+        return 10
+    return k
 
+
+def calcul_M_k(bases_svd,k):
+    bases_k = [bases_svd[i][:,:k] for i in range(10)]
+    return [np.identity(28*28)-np.matmul(bases_k[i],bases_k[i].transpose()) for i in range(10)]
+
+
+                     
 def split(I,train_prop) :
     training = [[] for i in range(10)]    
     test = [[]for i in range(10)]
@@ -157,9 +153,51 @@ def split(I,train_prop) :
         test[i] = I[i][nb:]
     return training,test
 
-training_set, test_set = split(I,0.01)
-bases = svd_base(training_set)
-b0 = bases[3][0].reshape((28,28))
-plt.imshow(b0,cmap='gray')
+def pourcentage_SVD(Test,M_k,threshold):
+    P1 = [0]*10
+    P2 = [0]*10
+    for i in range(10):
+        print("chifre en traitement: ",i)
+        for j in range(len(Test[i])):
+            T = test_svd(Test[i][j],M_k,threshold)
+            if T == i:
+                P1[i] += 1
+            elif T == 10:
+                P2[i] += 1
+            
+        P1[i]/=(len(Test[i])-P2[i])
+        P2[i]/= len(Test[i])
+    return P1,P2
+
+################################
+########### MAIN ###############
+################################
+Training,Test = Separation(I)
+
+'''
+###############"""""
+# Test Algo1
+L = centroids(Training)
+
+Afficher(I[2][3])
+
+Report_p = testNorm(I,L,5)
+
+Report(Report_p)
+#####################"
+'''
+
+bases = svd_base(Training)
+img = Test[3][302]
+M_k = calcul_M_k(bases,5)           
+P1,P2 = pourcentage_SVD(Test,M_k,0.95)
+print("P1",P1)
+print(sum(P1)/len(P1))
+print("P2",P2)
+print(sum(P2)/len(P2))
+
+'''
+plt.imshow(img.reshape((28,28)),cmap='gray')     
 plt.show()
 #print(test_svd(test_set[0][0],bases))
+'''
