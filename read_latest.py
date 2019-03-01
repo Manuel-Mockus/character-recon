@@ -5,9 +5,9 @@ import random
 import matplotlib.pyplot as plt
 import sys
 ###########################################
-#Variables Globaux:
+#Variables globales:
 
-POURCENT = 0.8
+POURCENT = 0.8 #proportion choisie du set Training par rapport à la base de donnée totale
 
 ###########################################
 #lecture Base de donees
@@ -54,7 +54,7 @@ def Afficher(vect):
 
         
     
-# Calcul des Moyennes de chaque chiffre sur l'ensemble des donees dediees au Training
+# Calcul des moyennes de chaque chiffre sur l'ensemble des donees dediees au Training
 def centroids(Training):
     L = [np.zeros(28*28) for i in range(10)]
     for i in range(10):
@@ -127,7 +127,21 @@ def svd_base(training) :
         bases[i] = np.linalg.svd(A)[0]
     return bases
 
-def test_svd(image,M_k,threshold) :#à corriger
+
+def calcul_M_k(bases_svd,k):
+    """
+    calcule pour chaque chiffre à partir de leurs bases SVD la matrice Id-(Uk*Uk^T)
+    utilisee pour le calcul des moindres carrés
+    """
+    bases_k = [bases_svd[i][:,:k] for i in range(10)]
+    return [np.identity(28*28)-np.matmul(bases_k[i],bases_k[i].transpose()) for i in range(10)]
+
+
+def test_svd(image,M_k,threshold) :
+    """
+    renvoie pour une image le chiffre auquel elle a été identifié ou si le test ne permet pas de conclure 10
+    à partir de M_k et avec un euil threshold
+    """
     least_squares = [np.linalg.norm(np.matmul(M_k[i],np.array([image]).transpose()),2) for i in range(10)]
     k = np.argmin(least_squares)
     min_1 = least_squares.pop(k)
@@ -137,23 +151,11 @@ def test_svd(image,M_k,threshold) :#à corriger
     return k
 
 
-def calcul_M_k(bases_svd,k):
-    bases_k = [bases_svd[i][:,:k] for i in range(10)]
-    return [np.identity(28*28)-np.matmul(bases_k[i],bases_k[i].transpose()) for i in range(10)]
-
-
-                     
-def split(I,train_prop) :
-    training = [[] for i in range(10)]    
-    test = [[]for i in range(10)]
-    for i in range(10) :
-        l = len(I[i])
-        nb = int(train_prop*l)
-        training[i] = I[i][:3]#indice à changer
-        test[i] = I[i][nb:]
-    return training,test
-
 def pourcentage_SVD(Test,M_k,threshold):
+    """
+    renvoie le pourcentage de vrais positifs et d'images ecartees pour chaque chiffre d'une base de donnée Test
+    a partir de M_k et avec un seuil threshold
+    """
     P1 = [0]*10
     P2 = [0]*10
     for i in range(10):
