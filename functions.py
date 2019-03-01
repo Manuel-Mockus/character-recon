@@ -196,44 +196,33 @@ def test_bases_SVD(Test,bases,threshold,nb_bases) :
         M_k = calcul_M_k(bases,k+1)
         report.append(pourcentage_SVD(Test,M_k,threshold))
     return report
-"""
-def 
-SS = 30
-kk = 6
 
-
-d = 2
-M2 = np.zeros((kk-3,SS))
-M3 = np.zeros((kk-3,SS))
-        
-for i in range(3,kk):
-    k = i
-    V =[d**p for p in range(0,k)]
-    print(V)
-    for j in range(0,SS):
-        S = j
-        t0 = time.process_time()
-        RechercheExhaustive(k,V,S)
-        t1 = time.process_time()
-        print(t1-t0)
-        M2[i-3,j] = t1-t0
+def SVD_show(Test,bases):
+    max_k = 10 #max de nombre de vecteurs de base
+    threshold_min,nb_t = 0.5,0.05 #seuil minimal et nombre de seuils
+    thresholds = np.linspace(threshold_min,1,nb_t,endpoint=True)
+    d = 2
+    Z = np.zeros((max_k,nb_t))
+    for i in range(max_k) :
+        print("test with ",i+1,"basis vectors")
+        for j in range(nb_t):
+            Z[i,j] = 
         
         
 
 
-y = [k for k in range(3,kk)]
-x = [k for k in range(0,SS)]
-Z = M2
+    y = [k for k in range(max_k)]
+    x = thresholds
 
-X, Y = np.meshgrid(x, y)
-print(Z)
+    X, Y = np.meshgrid(x, y)
+    print(Z)
 
-fig = plt.figure()
-ax = plt.axes(projection='3d')
-ax.contour3D(X, Y, Z, 50, cmap='binary')
-ax.set_ylabel('K')
-ax.set_xlabel('S')
-ax.set_zlabel('Temps')
-ax.plot_surface(X, Y, Z, rstride=1, cstride=1,cmap='viridis',edgecolor='none')
-plt.show()f
-"""
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+    ax.contour3D(X, Y, Z, 50, cmap='binary')
+    ax.set_ylabel('K')
+    ax.set_xlabel('S')
+    ax.set_zlabel('Temps')
+    ax.plot_surface(X, Y, Z, rstride=1, cstride=1,cmap='viridis',edgecolor='none')
+    plt.show()
+    return
