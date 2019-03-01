@@ -3,7 +3,9 @@ import numpy as np
 from PIL import Image
 import random
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import sys
+
 ###########################################
 #Variables globales:
 
@@ -171,18 +173,27 @@ def pourcentage_SVD(Test,M_k,threshold):
     P1 = [0]*10
     P2 = [0]*10
     for i in range(10):
-        print("percentage calculation digit:",i )
+        print("processing digit", i)
         for j in range(len(Test[i])):
             T = test_svd(Test[i][j],M_k,threshold)
             if T == i:
                 P1[i] += 1
             elif T == 10:
                 P2[i] += 1
+                
+    if sum([len(Test[i])-P2[i] for i in range(10)]) == 0:
+        #si tous les chiffres ont ete rejetes par l'algorithme
+        P1.append(1)
+    else:
+        P1.append(sum(P1)/sum([len(Test[i])-P2[i] for i in range(10)]))
         
-    P1.append(sum(P1)/sum([len(Test[i])-P2[i] for i in range(10)]))
     P2.append(sum(P2)/sum([len(Test[i]) for i in range(10)]))
     for i in range(10):
-        P1[i] /= len(Test[i])-P2[i]
+        if len(Test[i])-P2[i] == 0:
+            P1[i] = 1
+        else:
+            P1[i] /= len(Test[i])-P2[i]
+            
         P2[i] /= len(Test[i])
         
     return P1,P2
@@ -197,32 +208,41 @@ def test_bases_SVD(Test,bases,threshold,nb_bases) :
         report.append(pourcentage_SVD(Test,M_k,threshold))
     return report
 
-def SVD_show(Test,bases):
-    max_k = 10 #max de nombre de vecteurs de base
-    threshold_min,nb_t = 0.5,0.05 #seuil minimal et nombre de seuils
-    thresholds = np.linspace(threshold_min,1,nb_t,endpoint=True)
-    d = 2
-    Z = np.zeros((max_k,nb_t))
-    for i in range(max_k) :
-        print("test with ",i+1,"basis vectors")
+def SVD_show(Test,bases,nb_t,max_k):
+    threshold_min = 0.90 #seuil minimal et nombre de seuils
+    thresholds = np.linspace(threshold_min,1,nb_t)
+    Z1 = np.zeros((max_k,nb_t))
+    Z2 = np.zeros((max_k,nb_t))
+    for k in range(max_k) :
+        print("test with ",k+1,"basis vectors")
+        M_k = calcul_M_k(bases,k+1)
         for j in range(nb_t):
-            Z[i,j] = 
-        
+            print("treshold : ", thresholds[j])
+            P1,P2 = pourcentage_SVD(Test,M_k,thresholds[j])
+            Z1[k,j] = P1[10]
+            Z2[k,j] = P2[10]
         
 
-
-    y = [k for k in range(max_k)]
+    y = [k+1 for k in range(max_k)]
     x = thresholds
 
     X, Y = np.meshgrid(x, y)
-    print(Z)
 
-    fig = plt.figure()
+    fig1 = plt.figure(1)
     ax = plt.axes(projection='3d')
-    ax.contour3D(X, Y, Z, 50, cmap='binary')
-    ax.set_ylabel('K')
-    ax.set_xlabel('S')
-    ax.set_zlabel('Temps')
-    ax.plot_surface(X, Y, Z, rstride=1, cstride=1,cmap='viridis',edgecolor='none')
+    ax.contour3D(X, Y, Z1, 50, cmap='binary')
+    ax.set_ylabel('basis vectors')
+    ax.set_xlabel('threshold')
+    ax.set_zlabel('True positive percentage')
+    ax.plot_surface(X, Y, Z1, rstride=1, cstride=1,cmap='viridis',edgecolor='none')
+
+    fig2 = plt.figure(2)
+    ax = plt.axes(projection='3d')
+    ax.contour3D(X, Y, Z2, 50, cmap='binary')
+    ax.set_ylabel('basis vectors')
+    ax.set_xlabel('threshold')
+    ax.set_zlabel('Rejected percentage')
+    ax.plot_surface(X, Y, Z2, rstride=1, cstride=1,cmap='viridis',edgecolor='none')
+
+    
     plt.show()
-    return

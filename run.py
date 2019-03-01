@@ -36,9 +36,11 @@ Report(Report_p)
 
 bases = fn.svd_base(Training)
 
-report = fn.test_bases_SVD(Test,bases,0.95,10)
+fn.SVD_show(Test,bases,7,7)
 
-fn.Report(report,2)
+#report = fn.test_bases_SVD(Test,bases,0.95,10)
+
+#fn.Report(report,2)
 
 
 
