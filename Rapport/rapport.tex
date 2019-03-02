@@ -30,10 +30,11 @@ Nous avons choisi comme langage de programmation pour notre projet le Python.
 
 \chapter{Pré-traitement des données}
 La base de donnée étant un fichier matlab, nous avons dans un premier temps du la traduire dans un format utilisable sous python. Nous avons choisi comme format de stockage une liste de liste de vecteurs : le kième éléments de cette liste est une liste des vecteurs correspondants au chiffre k.\\
+Nous avons ensuite divisé la base de donnée en quatre afin que chacun des membre du groupe puisse effectuer des tests indépendants. 
 
-Les algorithmes étudiés relèvent du domaine de l'apprentissage automatique : après une phase d'apprentissage où l'on donne à l'algorithme des images et les chiffres respectifs comme références, on a une phase de traitement où l'algorithme doit reconnaître le chiffre à partir de l'image seule. Pour avoir des résultats pertinents, il faut donc distinguer clairement les données utilisées pour l'apprentissage et celles utilisées pour le traitement.\\(à compléter)\\
+Les algorithmes étudiés relèvent du domaine de l'apprentissage automatique : après une phase d'apprentissage où l'on donne à l'algorithme des images et les chiffres respectifs comme références, on a une phase de traitement où l'algorithme doit reconnaître le chiffre à partir de l'image seule. Pour avoir des résultats pertinents, il faut donc distinguer clairement les données utilisées pour l'apprentissage et celles utilisées pour le traitement.\\Le choix que nous avons fait est donc pour chaque base de donnée individuelle de diviser les données en $20\%$ fixe de données utilisées exclusivement pour les tests et de prendre pour donnée d'apprentissage aléatoirement $50\%$ des données restantes.
 
-Nous avons ensuite divisé la base de donnée afin que chacun des membre du groupe puisse effectuer des tests indépendants. 
+
 
 
 \chapter{Première méthode : calcul des écarts à la moyenne} 
@@ -55,6 +56,10 @@ Pour essayer de comprendre ce résultat il est intéressant de regarder plus en 
 \chapter{Deuxième méthode : utilisation de la décomposition en valeurs singulière (SVD)}
 \subsection{Théorie}
 \subsection{Pratique}
+\subsubsection{Clustering}%pourrait aller dans la partie pratique
+Pour cette méthode, nous avons effectué une classification (clustering) plus fine des résulats : si lors de l'analyse d'une image, on ne peut l'identifier de façon décisive à un chiffre, celle-ci est rejetée, ce qui permet d'améliorer le taux d'identification correct parmi les images non rejetées. \\Plus précisement, une image $z$ sera rejetée si le minimum $m1$ de l'ensemble des $ \norm{(I-U_{k}U_{k}^{T})z}_{2}$ (les moindres carrés pour chaque chiffre) n'est pas "significativement" plus petit que le deuxième plus petit élément de cet ensemble $m2$ (deux bases de chiffres pourraient alors correspondre à l'image). Pour définir ce "significativement" nous avons introduit un seuil compris entre $0.5$ et $1$ : une image sera rejetée si après le calcul de ses moindres carrés $m1>seuil*m2$. Plus le seuil est bas plus l'on est exigeant : avec un seuil de $1$ aucune image n'est rejetée et avec un seuil de $0.5$ l'évaluation d'une image est jugée concluante seulement si $m1\leq m2$.\\
+\subsection{Paramètres}
+Nous avons cherché à optimiser cette deuxième méthode en jouant sur deux paramètres : le nombre de vecteurs de base de $U$ choisis $k$ et le seuil.\\
 
 \chapter{Conclusion}
 

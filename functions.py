@@ -154,7 +154,7 @@ def calcul_M_k(bases_svd,k):
 def test_svd(image,M_k,threshold) :
     """
     renvoie pour une image le chiffre auquel elle a été identifié ou si le test ne permet pas de conclure 10
-    à partir de M_k et avec un euil threshold
+    à partir de M_k et avec un seuil threshold
     """
     least_squares = [np.linalg.norm(np.matmul(M_k[i],np.array([image]).transpose()),2) for i in range(10)]
     k = np.argmin(least_squares)
