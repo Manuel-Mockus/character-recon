@@ -100,21 +100,25 @@ def testNorm(Test,Centroids,Nb):
 
 
 #Report dans le terminal des pourcentages par chiffre et par norme
-def Report(Report_p,algo):
+def Report(Report_p,algo,write = False):
+    """
+    Si write == True
+"""
+    if write == True:
+        print("Writing report : Report.txt")
+        sys.stdout = open("Report.txt",'w')
+        
     N = len(Report_p)
     R = Report_p.copy()
-
     if algo == 1 :
         for i in range(len(Report_p)):
             for j in range(len(Report_p[i])):
                 R[i][j] = '%.5f'%Report_p[i][j]
-
         print('Percentages of correctly identified digits for each norm')
         print('Norm   |   0   |   1   |   2   |   3   |   4   |   5   |   6   |   7   |   8   |   9   |   total')
         print('inf    ', *R[0] , sep ="|")
         for i in range(1,len(R)):
             print(i,'     ', *R[i] , sep ="|")
-
 
     elif algo == 2:
         R1 = [R[i][0] for i in range(len(R))]
@@ -130,8 +134,6 @@ def Report(Report_p,algo):
         for i in range(1,len(R)):
             print(i,'True positifs', *R1[i] , sep ="|")
             print(i,'Rejected     ', *R2[i] , sep ="|")
-
-
 
 
 

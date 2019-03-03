@@ -21,32 +21,22 @@ else:
 I = fn.read_database(filename)
 Training,Test = fn.Separation(I)
 
-'''
-###############"""""
-# Test Algo1
-L = centroids(Training)
+if algo == 1:
+    #Algorithme Centroides
+    Centroids = fn.centroids(Training)
+    report = fn.testNorm(Test,Centroids,10)
+ 
 
-Afficher(I[2][3])
-
-Report_p = testNorm(I,L,5)
-
-Report(Report_p)
-#####################
-'''
-
-bases = fn.svd_base(Training)
-
-fn.SVD_show(Test,bases,7,7)
-
-#report = fn.test_bases_SVD(Test,bases,0.95,10)
-
-#fn.Report(report,2)
+elif algo == 2 :
+    #Algorithme SVD
+    bases = fn.svd_base(Training)
+    #report = fn.test_bases_SVD(Test,bases,0.95,10)
+    #Graphe 
+    fn.SVD_show(Test,bases,6,10)
+    
+                  
+fn.Report(report,algo,write = True)
 
 
 
 
-'''
-plt.imshow(img.reshape((28,28)),cmap='gray')     
-plt.show()
-#print(test_svd(test_set[0][0],bases))
-'''
