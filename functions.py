@@ -28,16 +28,20 @@ def read_database(filename):
         I[label[0][i]].append(255-data[i])
     return I
 
+#renvoie les sets de test (20% de la database, toujours les mêmes) et de training
+# (40% de la database choisi aléatoirement d'intersection vide avce le set de test)
+
 def Separation(I):
     Training = [[]for i in range(10)]
     Test = [[]for i in range(10)]
     for i in range(10):
-        for j in range(len(I[i])):
-            if j < len(I[i])*POURCENT:
-                Training[i].append(I[i][j])
-            else:
-                Test[i].append(I[i][j])
-
+        taille_i = len(I[i])
+        listeTraining = [k for k in range(int(taille_i*POURCENT))]
+        listeTraining = random.sample(listeTraining,int((taille_i*POURCENT)/2))
+        for j in listeTraining:
+            Training[i].append(I[i][j])
+        for j in range(int(taille_i*POURCENT),taille_i):
+            Test[i].append(I[i][j])
     return Training,Test
 
 
@@ -48,8 +52,8 @@ def Afficher(vect):
     plt.axis('off')
     plt.draw() # ne bloque pas la fenetre comme plt.show
 
-        
-    
+
+
 # Calcul des moyennes de chaque chiffre sur l'ensemble des donees dediees au Training
 def centroids(Training):
     L = [np.zeros(28*28) for i in range(10)]
@@ -57,12 +61,12 @@ def centroids(Training):
         for j in range(len(Training[i])):
             L[i] = np.add(L[i],Training[i][j])
         L[i] = L[i]/len(Training[i])
-        L[i] = L[i].astype(int) 
+        L[i] = L[i].astype(int)
     return L
 
 # Test d'une image: retourne le chiffre le plus proche selon la norme de 'MIK....' N
 def test(Image,Centroids,N):
-    return np.argmin([np.linalg.norm(Centroids[i]-Image,N) for i in range(10)]) 
+    return np.argmin([np.linalg.norm(Centroids[i]-Image,N) for i in range(10)])
 
 
 def pourcentage(Test,Centroids,N):
@@ -70,7 +74,7 @@ def pourcentage(Test,Centroids,N):
     Effectue un Test pour chaque image de l'ensemble 'Test' et verifie le resultat
     Retourne une liste avec les pourcentages d'identification correcte pour chaque chiffre et pour l'ensemble entier
     """
-    
+
     P = [0]*10
     for i in range(10):
         for j in range(len(Test[i])):
@@ -89,7 +93,7 @@ def testNorm(Test,Centroids,Nb):
     for i in range(1,Nb):
         print('Processing Norm :',i ,"Out of",Nb)
         Report_p.append(pourcentage(Test,Centroids,i))
-        
+
     #plt.bar([i for i in range(Nb)],pourcentages)
     #plt.show()
     return Report_p
@@ -111,7 +115,7 @@ def Report(Report_p,algo):
         for i in range(1,len(R)):
             print(i,'     ', *R[i] , sep ="|")
 
-            
+
     elif algo == 2:
         R1 = [R[i][0] for i in range(len(R))]
         R2 = [R[i][1] for i in range(len(R))]
@@ -126,9 +130,9 @@ def Report(Report_p,algo):
         for i in range(1,len(R)):
             print(i,'True positifs', *R1[i] , sep ="|")
             print(i,'Rejected     ', *R2[i] , sep ="|")
-            
-        
-    
+
+
+
 
 
 #SVD
@@ -180,22 +184,22 @@ def pourcentage_SVD(Test,M_k,threshold):
                 P1[i] += 1
             elif T == 10:
                 P2[i] += 1
-                
+
     if sum([len(Test[i])-P2[i] for i in range(10)]) == 0:
         #si tous les chiffres ont ete rejetes par l'algorithme
         P1.append(1)
     else:
         P1.append(sum(P1)/sum([len(Test[i])-P2[i] for i in range(10)]))
-        
+
     P2.append(sum(P2)/sum([len(Test[i]) for i in range(10)]))
     for i in range(10):
         if len(Test[i])-P2[i] == 0:
             P1[i] = 1
         else:
             P1[i] /= len(Test[i])-P2[i]
-            
+
         P2[i] /= len(Test[i])
-        
+
     return P1,P2
 
 def test_bases_SVD(Test,bases,threshold,nb_bases) :
@@ -221,7 +225,7 @@ def SVD_show(Test,bases,nb_t,max_k):
             P1,P2 = pourcentage_SVD(Test,M_k,thresholds[j])
             Z1[k,j] = P1[10]
             Z2[k,j] = P2[10]
-        
+
 
     y = [k+1 for k in range(max_k)]
     x = thresholds
@@ -244,5 +248,5 @@ def SVD_show(Test,bases,nb_t,max_k):
     ax.set_zlabel('Rejected percentage')
     ax.plot_surface(X, Y, Z2, rstride=1, cstride=1,cmap='viridis',edgecolor='none')
 
-    
+
     plt.show()
