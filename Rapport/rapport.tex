@@ -3,6 +3,7 @@
 \usepackage[french]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx} 
+\usepackage{float}
 \usepackage{amsmath}
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert} %pour écrire une norme:  \norm{...}
 
@@ -12,10 +13,6 @@
 \begin{document}
  
 \maketitle 
-
-%\begin{enonce}
-%...
-%\end{enonce}
 
 %\begin{resume}
 %...
@@ -62,7 +59,7 @@ Pour essayer de comprendre ce résultat il est intéressant de regarder plus en 
 
 %Idee? (si un des algorithmes a un temps de calcul eleve mais  est tres precise, faire une combinaison de algo simple avec seuil stricte + algo complexe pour les rejetées) + analyse 
 
-%Inserer conclusion temporaire, meme si on modifie ulterieurement avec les resultats des autres, on peut faire un poin sur le temps de calcul, et la relative efficacité de l'lagorithme.
+%Inserer conclusion temporaire, meme si on modifie ulterieurement avec les resultats des autres, on peut faire un point sur le temps de calcul, et la relative efficacité de l'lagorithme.
 
 
 
@@ -83,21 +80,23 @@ Nous avons cherché à optimiser cette deuxième méthode en jouant sur deux par
 %A revoir
 Le premier set de test a été effectuée pour des valeurs du seuil entre 0.9 et 1 (des valeurs inférieures du seuil donnant un taux de rejet trop élevées env. 20\%) et une valeur de k (nombre de vecteurs de base) entre 1 et 7.\\
 
+\begin{figure}[H]
+  	\includegraphics[width=\linewidth]{"Graphs/3D TP vs Rejected".png}
+  	\caption{A Modifier...}
+\end{figure}
 
-Le nombre de vecteurs de base $k$ choisi n'influe pas significativement sur la complexité des calculs : en effet seul le calcul de $I-U_{k}U_{k}^{T}$ dépend de $k$ et il est effectué une seule fois pour chaque chiffre. Cependant on remarque qu'au delà de 10 vecteurs de base, les résultats varient peu en fonction de $k$ %(cf.figure ) 
+Le nombre de vecteurs de base $k$ choisi n'influe pas significativement sur la complexité des calculs : en effet seul le calcul de $I-U_{k}U_{k}^{T}$ dépend de $k$ et il est effectué une seule fois pour chaque chiffre. Cependant on remarque qu'au delà de 10 vecteurs de base, les résultats varient peu en fonction de $k$ %(cf.figure en haut 3D) 
+
+
 Par la suite on fixe donc $k=10$.
-%ajouter graphs nuls
+
+\begin{figure}[H]
+  	\includegraphics[width=\linewidth]{"Graphs/TP vs Rejected".png}
+  	\caption{A Ajouter}
+\end{figure}
+
+	
 On remarque dans les figures (numéro) le pourcentage de vrais positifs et le pourcentages de rejetés sont proportionnelles et linéairement décroissantes en fonction du seuil. On n'a donc pas de choix optimal objectif pour le seuil, on choisira donc le seuil en fonction de la tolérance à l'erreur et le taux de rejet acceptable. 
-
-%
-
-
-
-\includegraphics[scale=0.75]{"Graphs/True positifs-1".png} \\
-
-\includegraphics[scale=0.75]{"Graphs/Rejected-1".png} \\
-
-
 
 
 \chapter{Conclusion}
