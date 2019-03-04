@@ -30,11 +30,9 @@ if algo == 1:
 elif algo == 2 :
     #Algorithme SVD
     bases = fn.svd_base(Training)
-    report = fn.test_bases_SVD(Test,bases,0.95,10)
-    
+    #report = fn.test_bases_SVD(Test,bases,0.95,10)
     #Graphe 
-    #report = fn.SVD_show_3D(Test,bases,4,8,13)
-    #report = fn.SVD_show_2D(Test,bases,10,0.95,0.999)
+    fn.SVD_show(Test,bases,6,10)
     
                   
 fn.Report(report,algo,write = True)

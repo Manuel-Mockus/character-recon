@@ -214,24 +214,22 @@ def test_bases_SVD(Test,bases,threshold,nb_bases) :
         report.append(pourcentage_SVD(Test,M_k,threshold))
     return report
 
-def SVD_show_3D(Test,bases,nb_t,min_k,max_k):
-    
-    threshold_min = 0.96 #seuil minimal
+def SVD_show(Test,bases,nb_t,max_k):
+    threshold_min = 0.90 #seuil minimal et nombre de seuils
     thresholds = np.linspace(threshold_min,1,nb_t)
-    Z1 = np.zeros((max_k-min_k+1,nb_t))
-    Z2 = np.zeros((max_k-min_k+1,nb_t))
-    report = []
-    for k in range(min_k,max_k+1) :
+    Z1 = np.zeros((max_k,nb_t))
+    Z2 = np.zeros((max_k,nb_t))
+    for k in range(max_k) :
         print("test with ",k+1,"basis vectors")
         M_k = calcul_M_k(bases,k+1)
         for j in range(nb_t):
             print("treshold : ", thresholds[j])
             P1,P2 = pourcentage_SVD(Test,M_k,thresholds[j])
-            Z1[k-min_k,j] = P1[10]
-            Z2[k-min_k,j] = P2[10]
-            report.append((P1,P2))
+            Z1[k,j] = P1[10]
+            Z2[k,j] = P2[10]
 
-    y = [k+1 for k in range(min_k,max_k+1)]
+
+    y = [k+1 for k in range(max_k)]
     x = thresholds
 
     X, Y = np.meshgrid(x, y)
@@ -251,38 +249,6 @@ def SVD_show_3D(Test,bases,nb_t,min_k,max_k):
     ax.set_xlabel('threshold')
     ax.set_zlabel('Rejected percentage')
     ax.plot_surface(X, Y, Z2, rstride=1, cstride=1,cmap='viridis',edgecolor='none')
-    plt.show()
-    return report
 
-
-
-def SVD_show_2D(Test,bases,nb_t,min_t,max_t):
-    
-    thresholds = np.linspace(min_t,max_t,nb_t,endpoint = True)
-    Z1 = np.zeros(nb_t)
-    Z2 = np.zeros(nb_t)
-    report = []
-    M_k = calcul_M_k(bases,10)
-    for j in range(nb_t):
-        print("treshold : ", thresholds[j])
-        P1,P2 = pourcentage_SVD(Test,M_k,thresholds[j])
-        Z1[j] = P1[10]
-        Z2[j] = P2[10]
-        report.append((P1,P2))
-
-    X = thresholds
-
-    fig1 = plt.figure(1)
-    plt.plot(X,Z1,'-x')
-    plt.ylabel('True positives percentage')
-    plt.xlabel('threshold')
-
-
-    fig2 = plt.figure(2)
-    plt.plot(X,Z2,'-o')
-    plt.ylabel('Rejected percentage')
-    plt.xlabel('threshold')
 
     plt.show()
-    return report
-
