@@ -29,7 +29,7 @@ def read_database(filename):
     return I
 
 #renvoie les sets de test (20% de la database, toujours les mêmes) et de training
-# (40% de la database choisi aléatoirement d'intersection vide avce le set de test)
+# (40% de la database choisi aléatoirement d'intersection vide avec le set de test)
 
 def Separation(I):
     Training = [[]for i in range(10)]
@@ -48,10 +48,10 @@ def Separation(I):
 
 def Afficher(vect):
     V = vect.reshape((28,28))
-    plt.imshow(V, cmap = 'gray',vmin = 0 ,vmax = 255)
+    plt.imshow(V, cmap = 'gray')
     plt.axis('off')
-    plt.draw() # ne bloque pas la fenetre comme plt.show
-
+    plt.plot() # ne bloque pas la fenetre comme plt.show
+    plt.show()
 
 
 # Calcul des moyennes de chaque chiffre sur l'ensemble des donees dediees au Training
@@ -76,13 +76,27 @@ def pourcentage(Test,Centroids,N):
     """
 
     P = [0]*10
+    Max_rejected = []
     for i in range(10):
+        L = [0]*10
         for j in range(len(Test[i])):
-            if test(Test[i][j],Centroids,N) == i:
+            projection = test(Test[i][j],Centroids,N)
+            if projection == i:
                 P[i] += 1
+            else:
+                L[projection]+=1
+        chiffre_max = np.argmax(L)
+        print(L)
+        #print(sum(L)/3500)
+        if sum(L) == 0:
+            Max_rejected.append(['N/A', 0])
+        else:
+            Max_rejected.append([chiffre_max, L[chiffre_max]/sum(L)])
+            
         P[i]/=len(Test[i])
     P.append(sum([P[i]*len(Test[i]) for i in range (10)])/sum([len(Test[i]) for i in range(10)]))
-    return P
+    Max_rejected.append(['N/A',0.0])
+    return P, Max_rejected
 
 # Effectue les test pour la norme inf, et les normes-p pour p in [1,20]
 def testNorm(Test,Centroids,Nb):
@@ -94,8 +108,18 @@ def testNorm(Test,Centroids,Nb):
         print('Processing Norm :',i ,"Out of",Nb)
         Report_p.append(pourcentage(Test,Centroids,i))
 
-    #plt.bar([i for i in range(Nb)],pourcentages)
-    #plt.show()
+    for i in range(10):
+        L = [Report_p[j][0][i] for j in range(len(Report_p))]
+        plt.plot([k for k in range(Nb)],L,'--',label = i)
+
+    L = [Report_p[j][0][10] for j in range(len(Report_p))]
+    plt.plot([i for i in range(Nb)],L,label = 'total')   
+
+    #plt.plot([i for i in range(Nb)],pourcentages)
+    plt.xlabel('Norme de Minkowski')
+    plt.ylabel('Pourcentage')
+    plt.legend()
+    plt.show()
     return Report_p
 
 
@@ -112,28 +136,36 @@ def Report(Report_p,algo,write = False):
     R = Report_p.copy()
     if algo == 1 :
         for i in range(len(Report_p)):
-            for j in range(len(Report_p[i])):
-                R[i][j] = '%.5f'%Report_p[i][j]
+            for j in range(len(Report_p[i][0])):
+                R[i][0][j] = '%.5f'%Report_p[i][0][j]
+                R[i][1][j][1] = '%.2f'%Report_p[i][1][j][1]
+                
         print('Percentages of correctly identified digits for each norm')
         print('Norm   |   0   |   1   |   2   |   3   |   4   |   5   |   6   |   7   |   8   |   9   |   total')
-        print('inf    ', *R[0] , sep ="|")
+        print('inf    ', *R[0][0] , sep ="|")
+        print('       ', *R[0][1] , sep ="|")
         for i in range(1,len(R)):
-            print(i,'     ', *R[i] , sep ="|")
+            print(i,'     ', *R[i][0] , sep ="|")
+            print('      ', *R[i][1] , sep ="|")
+        
+        
 
     elif algo == 2:
         R1 = [R[i][0] for i in range(len(R))]
         R2 = [R[i][1] for i in range(len(R))]
+        R3 = [R[i][2] for i in range(len(R))]
         for i in range(len(R1)):
-            print('R1: ',R1[i])
             for j in range(len(R1[i])):
                 R1[i][j] = '%.5f'%R1[i][j]
                 R2[i][j] = '%.5f'%R2[i][j]
+                R3[i][j][1] = '%.2f'%R3[i][j][1]
 
         print('Percentages of correctly identified digits for each k-vector basis')
         print('base size      |   0   |   1   |   2   |   3   |   4   |   5   |   6   |   7   |   8   |   9   |   total')
-        for i in range(1,len(R)):
-            print(i,'True positifs', *R1[i] , sep ="|")
-            print(i,'Rejected     ', *R2[i] , sep ="|")
+        for i in range(len(R)):
+            print(i+1,'True positifs', *R1[i] , sep ="|")
+            print('Rejected      ', *R2[i] , sep ="|")
+            print('Mistaken      ', *R3[i] , sep ="|")
 
 
 
@@ -176,9 +208,11 @@ def pourcentage_SVD(Test,M_k,threshold):
     renvoie le pourcentage de vrais positifs et d'images ecartees pour chaque chiffre et moyen d'une base de donnée Test
     a partir de M_k et avec un seuil threshold
     """
-    P1 = [0]*10
-    P2 = [0]*10
+    P1 = [0]*10 # pourcentage vrai positifs
+    P2 = [0]*10 # pourcentage rejetés
+    P3 = [] # (chiffre le plus confondu, pourcentage)
     for i in range(10):
+        L= [0]*10
         print("processing digit", i)
         for j in range(len(Test[i])):
             T = test_svd(Test[i][j],M_k,threshold)
@@ -186,7 +220,17 @@ def pourcentage_SVD(Test,M_k,threshold):
                 P1[i] += 1
             elif T == 10:
                 P2[i] += 1
+            else:
+                L[T] += 1
+                
+        chiffre_max = np.argmax(L) 
+        if sum(L) == 0:
+            P3.append(['N/A', 0])
+        else:
+            P3.append([chiffre_max, L[chiffre_max]/sum(L)])
+    P3.append(['N/A', 0])
 
+                
     if sum([len(Test[i])-P2[i] for i in range(10)]) == 0:
         #si tous les chiffres ont ete rejetes par l'algorithme
         P1.append(1)
@@ -202,7 +246,7 @@ def pourcentage_SVD(Test,M_k,threshold):
 
         P2[i] /= len(Test[i])
 
-    return P1,P2
+    return P1,P2,P3
 
 def test_bases_SVD(Test,bases,threshold,nb_bases) :
     """
@@ -212,6 +256,21 @@ def test_bases_SVD(Test,bases,threshold,nb_bases) :
     for k in range(nb_bases) :
         M_k = calcul_M_k(bases,k+1)
         report.append(pourcentage_SVD(Test,M_k,threshold))
+
+        
+    for i in range(10):
+        L = [report[j][0][i] for j in range(len(report))]
+        plt.plot([1+k for k in range(len(report))],L,'--',label = i)
+
+    L = [report[j][0][10] for j in range(len(report))]
+    plt.plot([i+1 for i in range(len(report))],L,label = 'total')   
+
+    #plt.plot([i for i in range(Nb)],pourcentages)
+    plt.xlabel('Nombre de vecteurs de base')
+    plt.ylabel('Pourcentage')
+    plt.legend()
+    plt.show()
+        
     return report
 
 def SVD_show_3D(Test,bases,nb_t,min_k,max_k):
@@ -286,3 +345,43 @@ def SVD_show_2D(Test,bases,nb_t,min_t,max_t):
     plt.show()
     return report
 
+
+
+##########################
+#####TANGENT DISTANCE#####
+##########################
+
+def find_min_translate_x(p,Te,e):
+    
+    Tp = np.diff(p)
+    z = np.zeros((28,1))
+    print(Tp.shape)
+    A = np.hstack([-Tp,z,Te,z])
+    print(A.shape)
+    U,S1,V = np.linalg.svd(A,compute_uv = True)
+
+    S = np.matrix(np.vstack([np.linalg.inv(np.diag(S1)),np.zeros((28,28))]))
+    print(U.shape)
+    print(S.shape)
+    print(V.shape)
+    x = V*S*U.transpose()*(p-e)
+    return np.linalg.norm(x)
+
+def TTT(Centroids,Test):
+    Te = [0]*10
+    P = [0]*10 # pourcentage vrai positifs
+    for i in range(10):
+        Te[i] = np.diff(Centroids[i].reshape((28,28)))
+    for i in range(10):
+        for j in range(len(Test[i])):
+            x = [0]*10
+            for k in range(10):
+                x[k]= find_min_translate_x(Test[i][j].reshape((28,28)),Te[k],Centroids[i].reshape((28,28)))
+            T = np.argmin(x)
+            if T == i:
+                P[i] += 1
+        P[i] /= len(Test[i])
+    P.append(sum(P)/sum([len(Test[i] for i in range(10))]))
+    return P
+
+        

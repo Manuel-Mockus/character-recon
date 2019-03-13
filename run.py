@@ -30,14 +30,17 @@ if algo == 1:
 elif algo == 2 :
     #Algorithme SVD
     bases = fn.svd_base(Training)
-    report = fn.test_bases_SVD(Test,bases,0.95,10)
+    report = fn.test_bases_SVD(Test,bases,1,4)
     
     #Graphe 
     #report = fn.SVD_show_3D(Test,bases,4,8,13)
     #report = fn.SVD_show_2D(Test,bases,10,0.95,0.999)
+
+else:
+    Centroids = fn.centroids(Training)
+    print(fn.TTT(Centroids,Test))
     
-                  
-fn.Report(report,algo,write = True)
+#fn.Report(report,algo,write = True)
 
 
 
