@@ -11,7 +11,7 @@ python3 run.py <nom de la base de donees> <Nb de l'lagorithme : 1 ou 2>
 1 : Algorithme de clasification basé sur le calcul des centroides
 2 : Algorithme base sur la decomposition SVD
 
-example:
+exemple:
 
 python3 run.py dataset_Manuel.mat 2
 
