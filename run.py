@@ -37,8 +37,10 @@ elif algo == 2 :
     #report = fn.SVD_show_2D(Test,bases,10,0.95,0.999)
 
 else:
-    Centroids = fn.centroids(Training)
-    print(fn.TTT(Centroids,Test))
+    bases = fn.svd_base(Training)
+    M_k = fn.calcul_M_k(bases,784)
+    print(fn.pourcentage_SVD(Test,M_k,0.99))
+    #print(fn.TTT(Centroids,Test))
     
     
 #fn.Report(report,algo,write = True)

@@ -353,28 +353,36 @@ def SVD_show_2D(Test,bases,nb_t,min_t,max_t):
 def find_min_translate_x(p,Te,e):
     
     Tp = np.diff(p)
-    z = np.zeros((28,1))
-    A = np.hstack([-Tp,z,Te,z])
+    Tp = np.hstack([Tp,np.array([0])])
+    Tp = np.matrix(Tp).transpose()
+    
+    A = np.hstack([-Tp,Te])
     U,S1,V = np.linalg.svd(A,compute_uv = True)
+    b = np.transpose([p-e])
+    S = np.matrix(np.hstack([np.linalg.inv(np.diag(S1)),np.zeros((2,782))]))
+    x = V*S*U.transpose()*b
+    #print(np.linalg.norm(A*x -b))
+    return np.linalg.norm(A*x -b)
 
-    S = np.matrix(np.vstack([np.linalg.inv(np.diag(S1)),np.zeros((28,28))]))
-    x = V*S*U.transpose()*(p-e)
-    return np.linalg.norm(x)
 
 def TTT(Centroids,Test):
-    Te = [0]*10
+    Te = []
     P = [0]*10 # pourcentage vrai positifs
     for i in range(10):
-        Te[i] = np.diff(Centroids[i].reshape((28,28)))
+        Te.append(np.diff(Centroids[i]))
+        Te[-1] = np.hstack([Te[-1],np.array([0])])
+        Te[-1] = np.matrix(Te[-1]).transpose()
     for i in range(10):
         print("chiffre ",i)
         for j in range(len(Test[i])):
             x = [0]*10
             for k in range(10):
-                x[k]= find_min_translate_x(Test[i][j].reshape((28,28)),Te[k],Centroids[i].reshape((28,28)))
+                x[k]= find_min_translate_x(Test[i][j],Te[k],Centroids[i])
             T = np.argmin(x)
+            #print(T,i)
             if T == i:
                 P[i] += 1
+        
     P.append(sum(P)/sum([len(Test[i]) for i in range(10)]))
     for i in range(10) :
         P[i] /= len(Test[i])

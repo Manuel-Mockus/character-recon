@@ -3,7 +3,7 @@
 \usepackage[french]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx} 
-\usepackage{float}
+%\usepackage{float}
 \usepackage{amsmath}
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert} %pour écrire une norme:  \norm{...}
 
@@ -39,27 +39,23 @@ Les algorithmes étudiés relèvent du domaine de l'apprentissage automatique : 
 
 \chapter{Première méthode : calcul des écarts à la moyenne} 
 \section{Théorie}
-La première méthode étudiée est une approche assez intuitive du problème.\\
+La première méthode étudiée est une approche assez intuitive du problème.
 Dans un premier temps, à partir du set d’entraînement, pour chaque chiffre on crée une image moyenne de toutes les image du chiffre : le centre de gravité (centre de masse, isobarycentre) de tous les vecteurs de ce chiffre.\\Une image inconnue est alors classée en cherchant l'image moyenne telle que l'écart de ressemblance entre l'image à tester et cette image soit minimum.\\
 
 On définit l'écart de ressemblance entre deux images comme étant la distance dans une certaine norme choisie entre les deux vecteurs $x$ et $y$ de $\textbf{R}^{784}$ correspondant aux images : $$d(x,y) = \norm{x-y}$$ Le choix de la norme et son influence sur les résultat est détaillé dans la partie pratique.
 
 \section{Pratique}
 Pour analyser l'efficacité de notre programme nous avons choisi d'observer deux types de données, le taux de réussite global de notre programme pour différentes normes, et le taux de réussite de notre programme pour chaque chiffre avec une norme fixe.\\
-On a alors rapidement constaté grâce au graphe ci dessous, que les normes infini et 1 sont nettement moins efficaces que les autres, la norme la plus efficace semblant être la norme 3, puis on peut constater que l'efficacité  jusqu'à atteindre asymptotiquement celle de la norme infinie.\\%inserer graphique avec toutes les normes
-% A discuter l'efficacité de la norme 3
+Nous avons comparé les taux de réussite de l'algorithme -pour chaque chiffre et en moyenne- pour les normes de Minkowski entre 1 et 10 et pour la norme infinie (cf. tableau).\\
+%tableau
+\includegraphics[scale=0.75]{Graphs/normsminky.png} \\
+On remarque qu'en moyenne les normes 2 et 3 sont les plus performantes avec une variance faible. \\
+La distance associée à la norme infinie ne prenant en compte que l'écart maximal composante par composante entre deux vecteurs, appliquée à la comparaison d'image elle est inefficace car l'écart maximal n'est pas représentatif de l'ensemble de l'image. De plus, quand k augmente, le comportement de la norme k de Minkowski tend vers celui de la norme infinie, ce qui se vérifie dans les résultats obtenus.\\ 
+Pour la normes 1, on observe de mauvais résultats moyens avec beaucoup de disparités entre les différents chiffres. On a donc cherché à savoir lorsqu'un chiffre est mal reconnu avec quel chiffre il a été le plus confondu (cf.tableau 2).\\
+On remarque pour la norme 1 que les 1 sont toujours correctement identifiés, mais que les autres chiffres sont souvent confondus avec des 1. 
+%tableau
+%creation tableau page 121 (normes 2,3)
 
-\includegraphics[scale=0.75]{Graphs/testNorme.png} \\
-
-
-
-Pour essayer de comprendre ce résultat il est intéressant de regarder plus en détails sur quels chiffres notre programme échoue pour les normes 1,2 et infini.
-% Discussion graphique / tableau
-%insérer graphique de réussite pour les trois normes
-
-%Idee? (si un des algorithmes a un temps de calcul eleve mais  est tres precise, faire une combinaison de algo simple avec seuil stricte + algo complexe pour les rejetées) + analyse 
-
-%Inserer conclusion temporaire, meme si on modifie ulterieurement avec les resultats des autres, on peut faire un point sur le temps de calcul, et la relative efficacité de l'lagorithme.
 
 
 
@@ -71,9 +67,10 @@ Les $u_{i}$ sont alors une base orthogonale de l'espace des trois. QUESTION: POU
 Maintenant qu'on dispose d'une base réduite de l'espace vectoriel des 3, on peut facilement calculer la distance pour la norme deux entre un chiffre non identifié (c'est à dire un vecteur de  $\textbf{R}^{784}$) et l'espace des 3 (cela revient à un calcul des moindres carrés). Si on effectue ce calcul pour l'espace correspondant à chaque chiffre on peut alors labélisé l'image, en constatant de quel espace vectoriel elle est le plus proche.
 
 \subsection{Pratique}
-\subsubsection{Clustering}%pourrait aller dans la partie pratique
+
+\subsubsection{Seuillage}%pourrait aller dans la partie pratique
 Pour cette méthode, nous avons effectué une classification (clustering) plus fine des résultats : si lors de l'analyse d'une image, on ne peut l'identifier de façon décisive à un chiffre, celle-ci est rejetée, ce qui permet d'améliorer le taux d'identification correct parmi les images non rejetées. \\
-Plus précisément, une image $z$ sera rejetée si le minimum $m1$ de l'ensemble des $ \norm{(I-U_{k}U_{k}^{T})z}_{2}$ (les moindres carrés pour chaque chiffre) n'est pas "significativement" plus petit que le deuxième plus petit élément de cet ensemble $m2$ (deux bases de chiffres pourraient alors correspondre à l'image). Pour définir ce "significativement" nous avons introduit un seuil compris entre $0.5$ et $1$ : une image sera rejetée si après le calcul de ses moindres carrés $m1>seuil*m2$. Plus le seuil est bas plus l'on est exigeant : avec un seuil de $1$ aucune image n'est rejetée et avec un seuil de $0.5$ l'évaluation d'une image est jugée concluante seulement si $m1\leq m2$.\\
+Plus précisément, une image $z$ sera rejetée si le minimum $m1$ de l'ensemble des $ \norm{(I-U_{k}U_{k}^{T})z}_{2}$ (les moindres carrés pour chaque chiffre) n'est pas "significativement" plus petit que le deuxième plus petit élément de cet ensemble $m2$ (deux bases de chiffres pourraient alors correspondre à l'image). Pour définir ce "significativement" nous avons introduit un seuil compris entre $0.5$ et $1$ : une image sera rejetée si après le calcul de ses moindres carrés $m1>seuil*m2$. Plus le seuil est bas plus l'on est exigeant : avec un seuil de $1$ aucune image n'est rejetée et avec un seuil de $0.5$ l'évaluation d'une image est jugée concluante seulement si $m1\leq 0.5m2$.\\
 \subsection{Paramètres}
 Nous avons cherché à optimiser cette deuxième méthode en jouant sur deux paramètres : le nombre de vecteurs de base de $U$ choisis $k$ et le seuil.\\
 
@@ -85,11 +82,10 @@ Le premier set de test a été effectuée pour des valeurs du seuil entre 0.9 et
   	\caption{A Modifier...}
 \end{figure}
 
-Le nombre de vecteurs de base $k$ choisi n'influe pas significativement sur la complexité des calculs : en effet seul le calcul de $I-U_{k}U_{k}^{T}$ dépend de $k$ et il est effectué une seule fois pour chaque chiffre. Cependant on remarque qu'au delà de 10 vecteurs de base, les résultats varient peu en fonction de $k$ %(cf.figure en haut 3D) 
+On remarque que quelque soit la base, l'efficacité de l'algorithme évolue approximativement de la même manière en fonction de la valeur du seuil.\\ 
+On peut donc par la suite se permettre d'étudier indépendamment l'influence du seuil et celle du nombre de bases.\\
 
-
-Par la suite on fixe donc $k=10$.
-
+\subsubsection{Seuil}
 \begin{figure}[H]
   	\includegraphics[width=\linewidth]{"Graphs/TP vs Rejected".png}
   	\caption{A Ajouter}
@@ -97,6 +93,22 @@ Par la suite on fixe donc $k=10$.
 
 	
 On remarque dans les figures (numéro) le pourcentage de vrais positifs et le pourcentages de rejetés sont proportionnelles et linéairement décroissantes en fonction du seuil. On n'a donc pas de choix optimal objectif pour le seuil, on choisira donc le seuil en fonction de la tolérance à l'erreur et le taux de rejet acceptable. 
+
+\subsubsection{Nombre de vecteurs de base}
+On remarque que l'efficacité de l'algorithme est croissante en fonction du nombre k de vecteurs de bases pour ceux observés. Cependant après notre analyse théorique, on peut dire que si k devient trop grand, les espaces vectoriels associés à chaque chiffre (étant de dimension k) ont de fortes chances de s'intersecter (cf. figure). Il est donc intéressant de chercher la valeur de k optimale pour notre algorithme.
+\begin{figure}[H]
+  	\includegraphics[width=\linewidth]{"test600bases".png}
+  	\caption{A Ajouter}
+\end{figure}
+
+\begin{figure}[H]
+  	\includegraphics[width=\linewidth]{"test30bases".png}
+  	\caption{A Ajouter}
+\end{figure}
+En faisant varier k entre 1 et 30, on remarque que l'efficacité de l'algorithme se stabilise à partir de k=20.De plus le nombre de vecteurs de base $k$ choisi n'influe pas significativement sur la complexité des calculs : en effet seul le calcul de $I-U_{k}U_{k}^{T}$ dépend de $k$ et il est effectué une seule fois pour chaque chiffre. On fixe donc par la suite k=20.
+
+\subsection{Tests globaux}
+
 
 
 \chapter{Conclusion}
