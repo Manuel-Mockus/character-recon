@@ -86,7 +86,6 @@ def pourcentage(Test,Centroids,N):
             else:
                 L[projection]+=1
         chiffre_max = np.argmax(L)
-        print(L)
         #print(sum(L)/3500)
         if sum(L) == 0:
             Max_rejected.append(['N/A', 0])
@@ -355,15 +354,10 @@ def find_min_translate_x(p,Te,e):
     
     Tp = np.diff(p)
     z = np.zeros((28,1))
-    print(Tp.shape)
     A = np.hstack([-Tp,z,Te,z])
-    print(A.shape)
     U,S1,V = np.linalg.svd(A,compute_uv = True)
 
     S = np.matrix(np.vstack([np.linalg.inv(np.diag(S1)),np.zeros((28,28))]))
-    print(U.shape)
-    print(S.shape)
-    print(V.shape)
     x = V*S*U.transpose()*(p-e)
     return np.linalg.norm(x)
 
@@ -373,6 +367,7 @@ def TTT(Centroids,Test):
     for i in range(10):
         Te[i] = np.diff(Centroids[i].reshape((28,28)))
     for i in range(10):
+        print("chiffre ",i)
         for j in range(len(Test[i])):
             x = [0]*10
             for k in range(10):
@@ -380,8 +375,10 @@ def TTT(Centroids,Test):
             T = np.argmin(x)
             if T == i:
                 P[i] += 1
+    P.append(sum(P)/sum([len(Test[i]) for i in range(10)]))
+    for i in range(10) :
         P[i] /= len(Test[i])
-    P.append(sum(P)/sum([len(Test[i] for i in range(10))]))
     return P
 
-        
+
+

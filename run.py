@@ -40,6 +40,7 @@ else:
     Centroids = fn.centroids(Training)
     print(fn.TTT(Centroids,Test))
     
+    
 #fn.Report(report,algo,write = True)
 
 
