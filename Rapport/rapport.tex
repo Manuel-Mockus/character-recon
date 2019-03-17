@@ -3,10 +3,11 @@
 \usepackage[french]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx} 
-%\usepackage{float}
+\usepackage{float}
 \usepackage{amsmath}
+\usepackage{caption}
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert} %pour écrire une norme:  \norm{...}
-
+%\usepackage{tabular}
 \author{...}
 \title{Reconnaissance de caractères}
 
@@ -21,7 +22,9 @@
 \chapter{Introduction}
 %MM
 
-Le coeur du projet est d'écrire un code permettant de reconnaître automatiquement des caractères manuscrits, le but étant de se familiariser avec des méthodes usuelles de reconnaissance de forme en les implémentant pour un cas particulier et en en comprenant la théorie. \\
+Le cœur du projet est d'écrire un code permettant de reconnaître automatiquement des caractères manuscrits, le but étant de se familiariser avec des méthodes usuelles de reconnaissance de forme en les implémentant pour un cas particulier et en en comprenant la théorie. \\
+
+Nous baserons notre travail 
 
 
 Les caractères à analyser seront ici des chiffres de 1 à 9 sous forme de vecteurs de taille $(28\times28,1)$ à valeurs entières comprise entre 0 et 255 : chaque vecteur représente une image de taille $28\times28$ en nuance de gris (0 = noir, blanc = 255). Nous disposons d'une base de données de 70000 chiffres manuscrits labellisés stockés sous le format décrit précédemment.\\
@@ -46,17 +49,53 @@ On définit l'écart de ressemblance entre deux images comme étant la distance 
 
 \section{Pratique}
 Pour analyser l'efficacité de notre programme nous avons choisi d'observer deux types de données, le taux de réussite global de notre programme pour différentes normes, et le taux de réussite de notre programme pour chaque chiffre avec une norme fixe.\\
-Nous avons comparé les taux de réussite de l'algorithme -pour chaque chiffre et en moyenne- pour les normes de Minkowski entre 1 et 10 et pour la norme infinie (cf. tableau).\\
+Nous avons comparé les taux de réussite de l'algorithme -pour chaque chiffre et en moyenne- pour les normes de Minkowski entre 1 et 10 et pour la norme infinie (table 3.1).\\
 %tableau
-\includegraphics[scale=0.75]{Graphs/normsminky.png} \\
+
+\begin{center}
+\captionof{table}{Pourcentage de chiffres correctement identifiées par norme de Minkowsky}
+\begin{tabular}{ |c||c|c|c|c|c|c|c|c|c|c|c| } 
+\hline
+ Norme & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & \textbf{Total} \\ 
+  \hline
+  \hline
+ 1 & 84 & 99 & 41 & 66 & 70 & 35 & 80 & 77 & 35 & 75 & \textbf{67}\\
+ \hline
+ 2 & 89 & 97 & 74 & 82 & 85 & 72 & 87 & 83 & 74 & 77 & \textbf{82}\\
+ \hline
+ 3 & 90 & 90 & 82 & 81 & 84 & 81 & 88 & 81 & 84 & 77 & \textbf{84}\\
+ \hline
+\end{tabular}
+\end{center}
+
+\begin{figure}[H]
+  	\includegraphics[width=\linewidth]{Graphs/normsminky.png}
+  	\caption{Performance de l'algorithme pour chaque chiffre et en moyenne en fonction de la norme de Minkowsky. (la valeur 0 en abscisse représente la norme infinie)}
+\end{figure}
+
 On remarque qu'en moyenne les normes 2 et 3 sont les plus performantes avec une variance faible. \\
 La distance associée à la norme infinie ne prenant en compte que l'écart maximal composante par composante entre deux vecteurs, appliquée à la comparaison d'image elle est inefficace car l'écart maximal n'est pas représentatif de l'ensemble de l'image. De plus, quand k augmente, le comportement de la norme k de Minkowski tend vers celui de la norme infinie, ce qui se vérifie dans les résultats obtenus.\\ 
-Pour la normes 1, on observe de mauvais résultats moyens avec beaucoup de disparités entre les différents chiffres. On a donc cherché à savoir lorsqu'un chiffre est mal reconnu avec quel chiffre il a été le plus confondu (cf.tableau 2).\\
-On remarque pour la norme 1 que les 1 sont toujours correctement identifiés, mais que les autres chiffres sont souvent confondus avec des 1. 
+Pour la norme 1, on observe de mauvais résultats moyens avec beaucoup de disparités entre les différents chiffres(Figure 3.1). On a donc cherché à savoir lorsqu'un chiffre est mal reconnu avec quel chiffre il a été le plus confondu (cf.tableau 2).\\
+On remarque pour la norme 1 que les 1 sont toujours correctement identifiés, mais que les autres chiffres sont souvent confondus avec des 1.
+ 
 %tableau
 %creation tableau page 121 (normes 2,3)
 
-
+\begin{center}
+\captionof{table}{Chiffres les plus souvent confondues par norme de Minkowsky}
+\begin{tabular}{ |c||c|c|c|c|c|c|c|c|c|c|c| } 
+\hline
+ Norme & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 \\ 
+  \hline
+  \hline
+  1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 \\
+ \hline
+  2 & 5 & 8 & 1 & 8 & 9 & 3 & 1 & 9 & 1 & 4 \\
+ \hline
+  3 & 5 & 8 & 8 & 8 & 9 & 3 & 2 & 9 & 3 & 4 \\
+ \hline
+\end{tabular}
+\end{center}
 
 
 \chapter{Deuxième méthode : utilisation de la décomposition en valeurs singulière (SVD)}
@@ -68,13 +107,12 @@ Maintenant qu'on dispose d'une base réduite de l'espace vectoriel des 3, on peu
 
 \subsection{Pratique}
 
-\subsubsection{Seuillage}%pourrait aller dans la partie pratique
+\subsubsection{Seuillage}
 Pour cette méthode, nous avons effectué une classification (clustering) plus fine des résultats : si lors de l'analyse d'une image, on ne peut l'identifier de façon décisive à un chiffre, celle-ci est rejetée, ce qui permet d'améliorer le taux d'identification correct parmi les images non rejetées. \\
 Plus précisément, une image $z$ sera rejetée si le minimum $m1$ de l'ensemble des $ \norm{(I-U_{k}U_{k}^{T})z}_{2}$ (les moindres carrés pour chaque chiffre) n'est pas "significativement" plus petit que le deuxième plus petit élément de cet ensemble $m2$ (deux bases de chiffres pourraient alors correspondre à l'image). Pour définir ce "significativement" nous avons introduit un seuil compris entre $0.5$ et $1$ : une image sera rejetée si après le calcul de ses moindres carrés $m1>seuil*m2$. Plus le seuil est bas plus l'on est exigeant : avec un seuil de $1$ aucune image n'est rejetée et avec un seuil de $0.5$ l'évaluation d'une image est jugée concluante seulement si $m1\leq 0.5m2$.\\
 \subsection{Paramètres}
 Nous avons cherché à optimiser cette deuxième méthode en jouant sur deux paramètres : le nombre de vecteurs de base de $U$ choisis $k$ et le seuil.\\
 
-%A revoir
 Le premier set de test a été effectuée pour des valeurs du seuil entre 0.9 et 1 (des valeurs inférieures du seuil donnant un taux de rejet trop élevées env. 20\%) et une valeur de k (nombre de vecteurs de base) entre 1 et 7.\\
 
 \begin{figure}[H]
@@ -96,13 +134,14 @@ On remarque dans les figures (numéro) le pourcentage de vrais positifs et le po
 
 \subsubsection{Nombre de vecteurs de base}
 On remarque que l'efficacité de l'algorithme est croissante en fonction du nombre k de vecteurs de bases pour ceux observés. Cependant après notre analyse théorique, on peut dire que si k devient trop grand, les espaces vectoriels qu'on associe à chaque chiffre (étant de dimension k) ont de fortes chances de s'intersecter (cf. figure). Il est donc intéressant de chercher la valeur de k optimale pour notre algorithme.
+
 \begin{figure}[H]
-  	\includegraphics[width=\linewidth]{"test600bases".png}
+  	\includegraphics[width=\linewidth]{"Graphs/test600bases".png}
   	\caption{A Ajouter}
 \end{figure}
 
 \begin{figure}[H]
-  	\includegraphics[width=\linewidth]{"test30bases".png}
+  	\includegraphics[width=\linewidth]{"Graphs/test30bases".png}
   	\caption{A Ajouter}
 \end{figure}
 En faisant varier k entre 1 et 30, on remarque que l'efficacité de l'algorithme se stabilise à partir de k=20.De plus le nombre de vecteurs de base $k$ choisi n'influe pas significativement sur la complexité des calculs : en effet seul le calcul de $I-U_{k}U_{k}^{T}$ dépend de $k$ et il est effectué une seule fois pour chaque chiffre. On fixe donc par la suite k=20.

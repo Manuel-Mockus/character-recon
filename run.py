@@ -43,7 +43,7 @@ else:
     #print(fn.TTT(Centroids,Test))
     
     
-#fn.Report(report,algo,write = True)
+fn.Report(report,algo,write = True)
 
 
 
