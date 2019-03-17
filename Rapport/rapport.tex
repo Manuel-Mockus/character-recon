@@ -7,7 +7,7 @@
 \usepackage{amsmath}
 \usepackage{caption}
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert} %pour écrire une norme:  \norm{...}
-\author{...}
+\author{Marin Costes\\Jonathan Mboko\\Manuel Mockus\\Octave Mestoudjian}
 \title{Reconnaissance de caractères}
 
 \begin{document}
@@ -27,7 +27,7 @@ Nous avons choisi comme langage de programmation pour notre projet le Python.
 La base de donnée étant un fichier matlab nous avons dans un premier temps du la traduire dans un format utilisable sous python. Nous avons choisi comme format de stockage une liste de liste de vecteurs : le $k^{eme}$ élément de cette liste est une liste des vecteurs correspondants au chiffre k.\\
 Nous avons ensuite divisé la base de donnée en quatre afin que chacun des membre du groupe puisse effectuer des tests indépendants. 
 
-Les algorithmes étudiés relèvent du domaine de l'apprentissage automatique : après une phase d'apprentissage où l'on donne à l'algorithme des images et les chiffres respectifs comme références, on a une phase de traitement où l'algorithme doit reconnaître le chiffre à partir de l'image seule. Pour avoir des résultats pertinents, il faut donc distinguer clairement les données utilisées pour l'apprentissage et celles utilisées pour le traitement.\\Le choix que nous avons fait est donc pour chaque base de donnée individuelle de diviser les données en $20\%$ fixe de données utilisées exclusivement pour les tests et de prendre pour donnée d'apprentissage aléatoirement $50\%$ des données restantes.
+Les algorithmes étudiés relèvent du domaine de l'apprentissage automatique : après une phase d'apprentissage où l'on donne à l'algorithme des images et leurs chiffres respectifs comme références, on a une phase de traitement où l'algorithme doit reconnaître le chiffre à partir de l'image seule. Pour avoir des résultats pertinents, il faut donc distinguer clairement les données utilisées pour l'apprentissage et celles utilisées pour le traitement.\\Le choix que nous avons fait est donc pour chaque base de donnée individuelle de diviser les données en $20\%$ fixe de données utilisées exclusivement pour les tests et de prendre pour donnée d'apprentissage aléatoirement $50\%$ des données restantes.
 
 
 
@@ -62,7 +62,7 @@ Nous avons comparé les taux de réussite de l'algorithme -pour chaque chiffre e
 
 \begin{figure}[H]
   	\includegraphics[width=\linewidth]{Graphs/normsminky.png}
-  	\caption{Performance de l'algorithme pour chaque chiffre et en moyenne en fonction de la norme de Minkowsky. (la valeur 0 en abscisse représente la norme infinie)}
+  	\caption{Performance de l'algorithme pour chaque chiffre et en moyenne en fonction de la norme de Minkowsky (la valeur 0 en abscisse représente la norme infinie).}
 \end{figure}
 
 On remarque qu'en moyenne les normes 2 et 3 sont les plus performantes avec une variance faible. \\
@@ -71,7 +71,7 @@ Pour la norme 1, on observe de mauvais résultats moyens avec beaucoup de dispar
 On remarque pour la norme 1 que les 1 sont toujours correctement identifiés, mais que les autres chiffres sont souvent confondus avec des 1.
 
 \begin{center}
-\captionof{table}{Chiffres les plus souvent confondues par norme de Minkowsky}
+\captionof{table}{Chiffres les plus souvent confondus par norme de Minkowsky}
 \begin{tabular}{ |c||c|c|c|c|c|c|c|c|c|c|c| } 
 \hline
  Norme & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 \\ 
@@ -91,8 +91,8 @@ On remarque pour la norme 1 que les 1 sont toujours correctement identifiés, ma
 \subsection{Théorie}
 Etant donné les résultats décevant de notre première méthode, il est nécessaire d'utiliser une autre technique qui prenne en compte les variations entre les différentes images représentant un même chiffre, cette technique repose sur un outil mathématique très puissant: la décomposition en matrices singulières (SVD).\\
 Il s'agit ici dans un premier temps, de créer pour chaque chiffre (on parlera ici uniquement des trois pour alléger l'écriture) une matrice A de 784 lignes, comportant autant de colonnes que le nombre de 3 dont on dispose dans notre base d'entrainement. Chaque colonne de cette matrice représente une image de 3. On dispose alors d'un sous espace vectoriel de $\textbf{R}^{784}$ , engendré par les colonnes de A (on appelera cet espace vectoriel "l'espace des trois"), qui est nécessairement de faible dimension, sinon les espaces propres à chaque chiffre s'intersecteraient. Or le théorème de décomposition en matrice singulière, nous permet de décomposer cette matrice ainsi: $$A = \sum_{i=1}^{784}{\sigma_{i}u_{i}v_{i}^{T}}$$\\
-Les $u_{i}$ sont alors une base orthogonale de l'espace des trois. De plus lors d'une SVD, la base est ordonnée de manières à ce que les $\sigma_{i}$ forment une suite décroissante ,qui finit par s'annuler dans notre cas (pour garantir une faible dimension). Les premiers vecteurs u de la SVD sont alors représentatif de l'espace vectoriel des 3, étant donné que toutes les matrices dans la somme sont de norme 1.\\
-Maintenant qu'on dispose d'une base réduite de l'espace vectoriel des 3, on peut facilement calculer la distance pour la norme deux entre un chiffre non identifié (c'est à dire un vecteur de  $\textbf{R}^{784}$) et l'espace des 3 (cela revient à un calcul des moindres carrés). Si on effectue ce calcul pour l'espace correspondant à chaque chiffre on peut alors labélisé l'image, en constatant de quel espace vectoriel elle est le plus proche.
+Les $u_{i}$ sont alors une base orthogonale de l'espace des trois. De plus lors d'une SVD, la base est ordonnée de manières à ce que les $\sigma_{i}$ forment une suite décroissante, qui finit par s'annuler dans notre cas (pour garantir une faible dimension). Les premiers vecteurs u de la SVD sont alors représentatifs de l'espace vectoriel des 3, étant donné que toutes les matrices dans la somme sont de norme 1.\\
+Maintenant qu'on dispose d'une base réduite de l'espace vectoriel des 3, on peut facilement calculer la distance pour la norme deux entre un chiffre non identifié (c'est à dire un vecteur de  $\textbf{R}^{784}$) et l'espace des 3 (cela revient à un calcul des moindres carrés). Si on effectue ce calcul pour l'espace correspondant à chaque chiffre on peut alors labéliser l'image, en constatant de quel espace vectoriel elle est le plus proche.
 
 \subsection{Pratique}
 
@@ -103,7 +103,7 @@ Plus précisément, une image $z$ sera rejetée si le minimum $m1$ de l'ensemble
 \begin{figure}[H]
 \begin{center}
   	\includegraphics[width=0.8\linewidth]{Graphs/Distance_bases_20_1.png}
-  	\caption{Moindres carres de toutes les 1 de test (20 vecteurs de base). On remarque une bonne identification des chiffres.}
+  	\caption{Moindres carrés de tous les 1 du test (20 vecteurs de base). On remarque une bonne identification des chiffres.}
   	\end{center}
 \end{figure}
 
@@ -111,7 +111,7 @@ Plus précisément, une image $z$ sera rejetée si le minimum $m1$ de l'ensemble
 \begin{center}
 
   	\includegraphics[width=0.8\linewidth]{Graphs/Distance_bases_20_3.png}
-  	\caption{Moindres carres de toutes les 1 de test (20 vecteurs de base). Le graphique montre la difficulté de classifier les 3 (relatvement par rapport aux 1.}
+  	\caption{Moindres carrés de tous les 3 du test (20 vecteurs de base). Le graphique montre la difficulté de classifier les 3 (relativement par rapport aux 1).}
 \end{center}
 \end{figure}
 
@@ -119,7 +119,7 @@ Plus précisément, une image $z$ sera rejetée si le minimum $m1$ de l'ensemble
 \subsection{Paramètres}
 Nous avons cherché à optimiser cette deuxième méthode en jouant sur deux paramètres : le nombre de vecteurs de base de $U$ choisis $k$ et le seuil.\\
 
-Le premier set de test a été effectuée pour des valeurs du seuil entre 0.9 et 1 (des valeurs inférieures du seuil donnant un taux de rejet trop élevées env. 20\%) et une valeur de k (nombre de vecteurs de base) entre 1 et 7 (Figure 4.1).\\
+Le premier set de test a été effectué pour des valeurs du seuil entre 0.9 et 1 (des valeurs inférieures du seuil donnant un taux de rejet trop élevées env. 20\%) et une valeur de k (nombre de vecteurs de base) entre 1 et 7 (Figure 4.1).\\
 
 \begin{figure}[H]
   	\includegraphics[width=\linewidth]{"Graphs/3D TP vs Rejected".png}
@@ -133,7 +133,7 @@ On peut donc par la suite se permettre d'étudier indépendamment l'influence du
 
 \begin{figure}[H]
   	\includegraphics[width=\linewidth]{"Graphs/TP vs Rejected".png}
-  	\caption{Pourcentage de Vrai positifs et rejetés en fonction du niveau du seuil.}
+  	\caption{Pourcentage de vrai positifs et de rejetés en fonction du niveau du seuil.}
 \end{figure}
 
 On remarque dans la figure 4.2 le pourcentage de vrais positifs et le pourcentages de rejetés sont proportionnelles et linéairement décroissantes en fonction du seuil. On n'a donc pas de choix optimal objectif pour le seuil, on choisira donc le seuil en fonction de la tolérance à l'erreur et le taux de rejet acceptable. 
@@ -143,16 +143,16 @@ On remarque que l'efficacité de l'algorithme est croissante en fonction du nomb
 
 \begin{figure}[H]
   	\includegraphics[width=\linewidth]{"Graphs/test30bases".png}
-  	\caption{Performance pour chaque chiffre et en moyenne en fonction du nombre de vecteurs base.}
+  	\caption{Performance pour chaque chiffre et en moyenne en fonction du nombre de vecteurs de base.}
 \end{figure}
 
 En faisant varier k entre 1 et 30, on remarque que l'efficacité de l'algorithme se stabilise à partir de k=20.De plus le nombre de vecteurs de base $k$ choisi n'influe pas significativement sur la complexité des calculs : en effet seul le calcul de $I-U_{k}U_{k}^{T}$ dépend de $k$ et il est effectué une seule fois pour chaque chiffre. On fixe donc par la suite k=20.
 
 \chapter{Conclusion: Test globaux}
 
-Pour tester la performance des algorithmes implémentées on a effectué une série de tests: on a réservé 20\% des images de la base de données comme ensemble de test, puis nous avons sélectionné aléatoirement la moitié des images restantes comme ensemble d’entraînement.\\
+Pour tester la performance des algorithmes implémentées on a effectué une série de tests sur l'ensemble de la base de donnée: on a réservé 20\% des images de la base de données comme ensemble de test, puis nous avons sélectionné aléatoirement la moitié des images restantes comme ensemble d’entraînement.\\
 
-Pour le premier algorithme nous avons testé 50 fois, obtenant en moyenne des performances de 83\% pour la norme 2 et 84\% pour la norme 2 (Table 5.1) avec des résultats variées en fonction des chiffres analysées.
+Pour le premier algorithme nous avons testé 50 fois, obtenant en moyenne des performances de 83\% pour la norme 2 et 84\% pour la norme 2 (Table 5.1) avec des résultats variées en fonction des chiffres analysés.
 
 \begin{center}
 \captionof{table}{Performance Algorithme 1, pour les normes 2 et 3}
@@ -168,7 +168,7 @@ Pour le premier algorithme nous avons testé 50 fois, obtenant en moyenne des pe
 \end{tabular}
 \end{center}
 
-Le deuxième algorithme étant significativement plus coûteux quant au temps de calcul, on a effectuée 30 tests, obtenant une performance moyenne de 96\% (Table 5.2). Les performances sont significativement plus consistantes pour toutes les chiffres par rapport a l'algorithme 1 (minimum 94\%).
+Le deuxième algorithme étant significativement plus coûteux quant au temps de calcul, on a effectuée 30 tests, obtenant une performance moyenne de 96\% (Table 5.2). Les performances sont significativement plus consistantes pour toutes les chiffres par rapport à l'algorithme 1 (minimum 94\%).
 
 \begin{center}
 \captionof{table}{Performance Algorithme 2 avec 20 vecteurs base}
@@ -182,7 +182,7 @@ Le deuxième algorithme étant significativement plus coûteux quant au temps de
 \end{tabular}
 \end{center}
 
-En ajoutant un seuil de ressemblance minimale, on est capable de mettre de coté les chiffres les plus difficiles a identifier (Tables 5.3 et 5.4). si on accepte un taux de rejet d'environ 5\% on peut atteindre des une pourcentage d'identification correcte d'environ 98\%.
+En ajoutant un seuil de ressemblance minimale, on est capable de mettre de coté les chiffres les plus difficiles à identifier (Tables 5.3 et 5.4). si on accepte un taux de rejet d'environ 5\% on peut atteindre un pourcentage d'identification correcte d'environ 98\%.
 
 \begin{center}
 \captionof{table}{Performance et taux de Rejets Algorithme 2 avec 20 vecteurs base et un seuil de 0.99.}
