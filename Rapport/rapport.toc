@@ -10,7 +10,5 @@
 \contentsline {subsubsection}{Seuillage}{9}
 \contentsline {subsection}{\numberline {4.0.3}Param\IeC {\`e}tres}{9}
 \contentsline {subsubsection}{Seuil}{10}
-\contentsline {subsubsection}{Nombre de vecteurs de base}{10}
-\contentsline {subsection}{\numberline {4.0.4}Tests globaux}{12}
-\contentsline {chapter}{\numberline {5}Conclusion}{13}
-\contentsline {chapter}{\numberline {A}Annexe 1}{15}
+\contentsline {subsubsection}{Nombre de vecteurs de base}{11}
+\contentsline {chapter}{\numberline {5}Conclusion: Test globaux}{12}
