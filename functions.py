@@ -91,7 +91,7 @@ def pourcentage(Test,Centroids,N):
             Max_rejected.append(['N/A', 0])
         else:
             Max_rejected.append([chiffre_max, L[chiffre_max]/sum(L)])
-            
+
         P[i]/=len(Test[i])
     P.append(sum([P[i]*len(Test[i]) for i in range (10)])/sum([len(Test[i]) for i in range(10)]))
     Max_rejected.append(['N/A',0.0])
@@ -112,7 +112,7 @@ def testNorm(Test,Centroids,Nb):
         plt.plot([k for k in range(Nb)],L,'--',label = i)
 
     L = [Report_p[j][0][10] for j in range(len(Report_p))]
-    plt.plot([i for i in range(Nb)],L,label = 'total')   
+    plt.plot([i for i in range(Nb)],L,label = 'total')
 
     #plt.plot([i for i in range(Nb)],pourcentages)
     plt.xlabel('Norme de Minkowski')
@@ -130,7 +130,7 @@ def Report(Report_p,algo,write = False):
     if write == True:
         print("Writing report : Report.txt")
         sys.stdout = open("Report.txt",'w')
-        
+
     N = len(Report_p)
     R = Report_p.copy()
     if algo == 1 :
@@ -138,7 +138,7 @@ def Report(Report_p,algo,write = False):
             for j in range(len(Report_p[i][0])):
                 R[i][0][j] = '%.5f'%Report_p[i][0][j]
                 R[i][1][j][1] = '%.2f'%Report_p[i][1][j][1]
-                
+
         print('Percentages of correctly identified digits for each norm')
         print('Norm   |   0   |   1   |   2   |   3   |   4   |   5   |   6   |   7   |   8   |   9   |   total')
         print('inf    ', *R[0][0] , sep ="|")
@@ -146,8 +146,8 @@ def Report(Report_p,algo,write = False):
         for i in range(1,len(R)):
             print(i,'     ', *R[i][0] , sep ="|")
             print('      ', *R[i][1] , sep ="|")
-        
-        
+
+
 
     elif algo == 2:
         R1 = [R[i][0] for i in range(len(R))]
@@ -202,6 +202,22 @@ def test_svd(image,M_k,threshold) :
     return k
 
 
+def affiche_norme_SVD(bases,k,Test,i):
+    """
+    affiche la norme du résultat du calcul matriciel obtenu lors du calcul de la SVD pour chaque
+    exemplaire du chiffre i par rapport aux bases des différents chiffres
+    """
+    M_k = calcul_M_k(bases,k)
+    abs = [i for i in range(10)]
+    for j in range(len(Test[i])):
+        least_squares = [np.linalg.norm(np.matmul(M_k[l],np.array([Test[i][j]]).transpose()),2) for l in range(10)]
+        plt.plot(abs,least_squares)
+        plt.xlabel('Base')
+        plt.ylabel('Distance à la base')
+        plt.xticks([i for i in range(10)],[i for i in range(10)])
+        plt.legend()
+    plt.show()
+
 def pourcentage_SVD(Test,M_k,threshold):
     """
     renvoie le pourcentage de vrais positifs et d'images ecartees pour chaque chiffre et moyen d'une base de donnée Test
@@ -221,15 +237,15 @@ def pourcentage_SVD(Test,M_k,threshold):
                 P2[i] += 1
             else:
                 L[T] += 1
-                
-        chiffre_max = np.argmax(L) 
+
+        chiffre_max = np.argmax(L)
         if sum(L) == 0:
             P3.append(['N/A', 0])
         else:
             P3.append([chiffre_max, L[chiffre_max]/sum(L)])
     P3.append(['N/A', 0])
 
-                
+
     if sum([len(Test[i])-P2[i] for i in range(10)]) == 0:
         #si tous les chiffres ont ete rejetes par l'algorithme
         P1.append(1)
@@ -256,24 +272,24 @@ def test_bases_SVD(Test,bases,threshold,nb_bases) :
         M_k = calcul_M_k(bases,k+1)
         report.append(pourcentage_SVD(Test,M_k,threshold))
 
-        
+
     for i in range(10):
         L = [report[j][0][i] for j in range(len(report))]
         plt.plot([1+k for k in range(len(report))],L,'--',label = i)
 
     L = [report[j][0][10] for j in range(len(report))]
-    plt.plot([i+1 for i in range(len(report))],L,label = 'total')   
+    plt.plot([i+1 for i in range(len(report))],L,label = 'total')
 
     #plt.plot([i for i in range(Nb)],pourcentages)
     plt.xlabel('Nombre de vecteurs de base')
     plt.ylabel('Pourcentage')
     plt.legend()
     plt.show()
-        
+
     return report
 
 def SVD_show_3D(Test,bases,nb_t,min_k,max_k):
-    
+
     threshold_min = 0.96 #seuil minimal
     thresholds = np.linspace(threshold_min,1,nb_t)
     Z1 = np.zeros((max_k-min_k+1,nb_t))
@@ -315,7 +331,7 @@ def SVD_show_3D(Test,bases,nb_t,min_k,max_k):
 
 
 def SVD_show_2D(Test,bases,nb_t,min_t,max_t):
-    
+
     thresholds = np.linspace(min_t,max_t,nb_t,endpoint = True)
     Z1 = np.zeros(nb_t)
     Z2 = np.zeros(nb_t)
@@ -351,11 +367,11 @@ def SVD_show_2D(Test,bases,nb_t,min_t,max_t):
 ##########################
 
 def find_min_translate_x(p,Te,e):
-    
+
     Tp = np.diff(p)
     Tp = np.hstack([Tp,np.array([0])])
     Tp = np.matrix(Tp).transpose()
-    
+
     A = np.hstack([-Tp,Te])
     U,S1,V = np.linalg.svd(A,compute_uv = True)
     b = np.transpose([p-e])
@@ -382,11 +398,8 @@ def TTT(Centroids,Test):
             #print(T,i)
             if T == i:
                 P[i] += 1
-        
+
     P.append(sum(P)/sum([len(Test[i]) for i in range(10)]))
     for i in range(10) :
         P[i] /= len(Test[i])
     return P
-
-
-
