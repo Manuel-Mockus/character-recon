@@ -1,0 +1,16 @@
+\select@language {french}
+\contentsline {chapter}{\numberline {1}Introduction}{3}
+\contentsline {chapter}{\numberline {2}Pr\IeC {\'e}-traitement des donn\IeC {\'e}es}{4}
+\contentsline {chapter}{\numberline {3}Premi\IeC {\`e}re m\IeC {\'e}thode : calcul des \IeC {\'e}carts \IeC {\`a} la moyenne}{5}
+\contentsline {section}{\numberline {3.1}Th\IeC {\'e}orie}{5}
+\contentsline {section}{\numberline {3.2}Pratique}{5}
+\contentsline {chapter}{\numberline {4}Deuxi\IeC {\`e}me m\IeC {\'e}thode : utilisation de la d\IeC {\'e}composition en valeurs singuli\IeC {\`e}re (SVD)}{8}
+\contentsline {subsection}{\numberline {4.0.1}Th\IeC {\'e}orie}{8}
+\contentsline {subsection}{\numberline {4.0.2}Pratique}{9}
+\contentsline {subsubsection}{Seuillage}{9}
+\contentsline {subsection}{\numberline {4.0.3}Param\IeC {\`e}tres}{9}
+\contentsline {subsubsection}{Seuil}{10}
+\contentsline {subsubsection}{Nombre de vecteurs de base}{10}
+\contentsline {subsection}{\numberline {4.0.4}Tests globaux}{12}
+\contentsline {chapter}{\numberline {5}Conclusion}{13}
+\contentsline {chapter}{\numberline {A}Annexe 1}{15}

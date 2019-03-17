@@ -7,7 +7,6 @@
 \usepackage{amsmath}
 \usepackage{caption}
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert} %pour écrire une norme:  \norm{...}
-%\usepackage{tabular}
 \author{...}
 \title{Reconnaissance de caractères}
 
@@ -18,13 +17,13 @@
 %\begin{resume}
 %...
 %\end{resume}
-
+\tableofcontents
 \chapter{Introduction}
 %MM
 
 Le cœur du projet est d'écrire un code permettant de reconnaître automatiquement des caractères manuscrits, le but étant de se familiariser avec des méthodes usuelles de reconnaissance de forme en les implémentant pour un cas particulier et en en comprenant la théorie. \\
 
-Nous baserons notre travail 
+Nous baserons notre travail sur le 
 
 
 Les caractères à analyser seront ici des chiffres de 1 à 9 sous forme de vecteurs de taille $(28\times28,1)$ à valeurs entières comprise entre 0 et 255 : chaque vecteur représente une image de taille $28\times28$ en nuance de gris (0 = noir, blanc = 255). Nous disposons d'une base de données de 70000 chiffres manuscrits labellisés stockés sous le format décrit précédemment.\\
@@ -77,9 +76,6 @@ On remarque qu'en moyenne les normes 2 et 3 sont les plus performantes avec une 
 La distance associée à la norme infinie ne prenant en compte que l'écart maximal composante par composante entre deux vecteurs, appliquée à la comparaison d'image elle est inefficace car l'écart maximal n'est pas représentatif de l'ensemble de l'image. De plus, quand k augmente, le comportement de la norme k de Minkowski tend vers celui de la norme infinie, ce qui se vérifie dans les résultats obtenus.\\ 
 Pour la norme 1, on observe de mauvais résultats moyens avec beaucoup de disparités entre les différents chiffres(Figure 3.1). On a donc cherché à savoir lorsqu'un chiffre est mal reconnu avec quel chiffre il a été le plus confondu (cf.tableau 2).\\
 On remarque pour la norme 1 que les 1 sont toujours correctement identifiés, mais que les autres chiffres sont souvent confondus avec des 1.
- 
-%tableau
-%creation tableau page 121 (normes 2,3)
 
 \begin{center}
 \captionof{table}{Chiffres les plus souvent confondues par norme de Minkowsky}
@@ -129,7 +125,6 @@ On peut donc par la suite se permettre d'étudier indépendamment l'influence du
   	\caption{A Ajouter}
 \end{figure}
 
-	
 On remarque dans les figures (numéro) le pourcentage de vrais positifs et le pourcentages de rejetés sont proportionnelles et linéairement décroissantes en fonction du seuil. On n'a donc pas de choix optimal objectif pour le seuil, on choisira donc le seuil en fonction de la tolérance à l'erreur et le taux de rejet acceptable. 
 
 \subsubsection{Nombre de vecteurs de base}
@@ -150,7 +145,9 @@ En faisant varier k entre 1 et 30, on remarque que l'efficacité de l'algorithme
 
 
 
-\chapter{Conclusion}
+\chapter{Conclusion: Test globaux}
+
+Pour 
 
 \bibliography{exemple} % Utilise exemple.bib
   
@@ -163,8 +160,4 @@ En faisant varier k entre 1 et 30, on remarque que l'efficacité de l'algorithme
 %\bibliographystyle{alpha}
 \cleardoublepage
 
-\appendix
-
-\chapter{Annexe 1}
-...
 \end{document}
