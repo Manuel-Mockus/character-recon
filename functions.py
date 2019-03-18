@@ -366,8 +366,16 @@ def SVD_show_2D(Test,bases,nb_t,min_t,max_t):
 #####TANGENT DISTANCE#####
 ##########################
 
-def find_min_translate_x(p,Te,e):
+def Translation(img, k):
+    img2 = np.copy(img)
+    img2 = img2.reshape((28,28))
+    img2 = np.roll(img2, k, axis = 1) # translation en X
+    img2 = img2.reshape((1,784))
+    return img2
 
+
+def find_min_translate_x(p,Te,e):
+    
     Tp = np.diff(p)
     Tp = np.hstack([Tp,np.array([0])])
     Tp = np.matrix(Tp).transpose()
@@ -377,7 +385,8 @@ def find_min_translate_x(p,Te,e):
     b = np.transpose([p-e])
     S = np.matrix(np.hstack([np.linalg.inv(np.diag(S1)),np.zeros((2,782))]))
     x = V*S*U.transpose()*b
-    #print(np.linalg.norm(A*x -b))
+    print(U.shape,S.shape,V.shape,x.shape)
+    print(np.linalg.norm(A*x -b))
     return np.linalg.norm(A*x -b)
 
 
@@ -385,9 +394,10 @@ def TTT(Centroids,Test):
     Te = []
     P = [0]*10 # pourcentage vrai positifs
     for i in range(10):
-        Te.append(np.diff(Centroids[i]))
-        Te[-1] = np.hstack([Te[-1],np.array([0])])
-        Te[-1] = np.matrix(Te[-1]).transpose()
+        T = np.diff(Centroids[i])
+        T = np.hstack([T,np.array([0])])
+        T = np.matrix(T).transpose()
+        Te.append(T)
     for i in range(10):
         print("chiffre ",i)
         for j in range(len(Test[i])):

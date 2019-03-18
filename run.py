@@ -37,13 +37,25 @@ elif algo == 2 :
     #report = fn.SVD_show_2D(Test,bases,10,0.95,0.999)
 
 else:
-    bases = fn.svd_base(Training)
-    M_k = fn.calcul_M_k(bases,784)
-    print(fn.pourcentage_SVD(Test,M_k,0.99))
+    """
+    for i in range(10):
+        for j in range(10):
+    Centroids = fn.centroids(Training)
+    TTT = fn.TTT(Centroids,Test)
+    """
     #print(fn.TTT(Centroids,Test))
+    Centroids = fn.centroids(Training)
+    print(Centroids[1].shape)
+    img = Test[1][203]
+    img2 = fn.Translation(img, 2)
+    T = np.matrix(np.diff(img2))
+    print(T.shape)
+    T = np.stack([T,np.array([0])])
+    #T = np.matrix(T).transpose()
+    print(fn.find_min_translate_x(img,T,img2))
     
     
-fn.Report(report,algo,write = True)
+#fn.Report(report,algo,write = True)
 
 
 
