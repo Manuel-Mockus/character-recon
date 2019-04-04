@@ -1,6 +1,6 @@
 import scipy.io as sio
 import numpy as np
-#from PIL import Image
+from PIL import Image
 import random
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -428,7 +428,7 @@ def diff_PHT(img):
 def diff_DHT(img):
     px = diff_x(img).reshape(28,28)
     py = diff_y(img).reshape(28,28)
-    coords = np.matrix([i for i in range(-14,14)]) 
+    coords = np.matrix([i for i in range(-14,14)])
     ones = np.matrix(np.ones(28))
     y = ones.transpose() * coords
     x = coords.transpose() * ones
