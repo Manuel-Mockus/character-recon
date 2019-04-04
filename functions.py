@@ -1,6 +1,6 @@
 import scipy.io as sio
 import numpy as np
-from PIL import Image
+#from PIL import Image
 import random
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -399,6 +399,42 @@ def diff_rotate(img):
      D_rotation = np.multiply(y,px) - np.multiply(x,py)
      return D_rotation.reshape(784)
 
+def diff_scaling(img):
+    px = diff_x(img).reshape(28,28)
+    py = diff_y(img).reshape(28,28)
+    coords = np.matrix([i for i in range(-14,14)]) # pour que le scaling soit par rapport au centre :)
+    ones = np.matrix(np.ones(28))
+    y = ones.transpose() * coords
+    x = coords.transpose() * ones
+    D_scaling = np.multiply(x,px) + np.multiply(y,py)
+    return D_scaling.reshape(784)
+
+def diff_thickening(img):
+    px = diff_x(img).reshape(28,28)
+    py = diff_y(img).reshape(28,28)
+    D_scaling = np.multiply(px,px) + np.multiply(py,py)
+    return D_scaling.reshape(784)
+
+def diff_PHT(img):
+    px = diff_x(img).reshape(28,28)
+    py = diff_y(img).reshape(28,28)
+    coords = np.matrix([i for i in range(-14,14)])
+    ones = np.matrix(np.ones(28))
+    y = ones.transpose() * coords
+    x = coords.transpose() * ones
+    D_scaling = np.multiply(x,px) - np.multiply(y,py)
+    return D_scaling.reshape(784)
+
+def diff_DHT(img):
+    px = diff_x(img).reshape(28,28)
+    py = diff_y(img).reshape(28,28)
+    coords = np.matrix([i for i in range(-14,14)]) 
+    ones = np.matrix(np.ones(28))
+    y = ones.transpose() * coords
+    x = coords.transpose() * ones
+    D_scaling = np.multiply(y,px) + np.multiply(x,py)
+    return D_scaling.reshape(784)
+
 
 def find_min(p,Te,e,func):
     Tp = func(p)
@@ -418,10 +454,10 @@ def find_min(p,Te,e,func):
     print(np.linalg.norm(A*x - b))
     print(np.linalg.norm(A*np.matrix([[1],[1]]) - b))
     print(A)
-    
+
     print(np.linalg.norm(A*x - b))
     """
-    
+
     return np.linalg.norm(A*x - b)
 
 
