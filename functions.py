@@ -5,6 +5,7 @@ import random
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import sys
+from scipy.signal import convolve2d
 
 ###########################################
 #Variables globales:
@@ -366,44 +367,77 @@ def SVD_show_2D(Test,bases,nb_t,min_t,max_t):
 #####TANGENT DISTANCE#####
 ##########################
 
-def Translation(img, k):
-    img2 = np.copy(img)
-    img2 = img2.reshape((28,28))
-    img2 = np.roll(img2, k, axis = 1) # translation en X
-    img2 = img2.reshape((1,784))
-    return img2
+def Translation(img,k,axis = 1):
+    #axis  1 = x, 0 = y
+    img1 = np.copy(img)
+    img1 = img1.reshape(28,28)
+    img1 = np.roll(img1, k, axis) # translation en X
+    img1 = img1.reshape(784)
+    return img1
+
+def diff_x(img):
+    I = 255 - img.reshape(28,28)
+    filtre_x = np.array([[0,0,0],[-1,1,0],[0,0,0]])
+    Ix = convolve2d(I,filtre_x)
+    Ix = Ix[1:-1,1:-1]
+    return Ix.reshape(784)
+
+def diff_y(img):
+    I = 255 - img.reshape(28,28)
+    filtre_y = np.array([[0,-1,0],[0,1,0],[0,0,0]])
+    Iy = convolve2d(I,filtre_y)
+    Iy = Iy[1:-1,1:-1]
+    return Iy.reshape(784)
+
+def diff_rotate(img):
+     px = diff_x(img).reshape(28,28)
+     py = diff_y(img).reshape(28,28)
+     coords = np.matrix([i for i in range(-14,14)]) # pour que la rotation soit par rapport au centre
+     ones = np.matrix(np.ones(28))
+     y = ones.transpose() * coords
+     x = coords.transpose() * ones
+     D_rotation = np.multiply(y,px) - np.multiply(x,py)
+     return D_rotation.reshape(784)
 
 
-def find_min_translate_x(p,Te,e):
-    
-    Tp = np.diff(p)
-    Tp = np.hstack([Tp,np.array([0])])
+def find_min(p,Te,e,func):
+    Tp = func(p)
     Tp = np.matrix(Tp).transpose()
-
     A = np.hstack([-Tp,Te])
-    U,S1,V = np.linalg.svd(A,compute_uv = True)
+    U,S1,V = np.linalg.svd(A)
     b = np.transpose([p-e])
-    S = np.matrix(np.hstack([np.linalg.inv(np.diag(S1)),np.zeros((2,782))]))
-    x = V*S*U.transpose()*b
-    print(U.shape,S.shape,V.shape,x.shape)
-    print(np.linalg.norm(A*x -b))
-    return np.linalg.norm(A*x -b)
+    S = np.matrix(np.diag(S1))
+    """
+    print("V",V.shape)
+    print("U",U.shape)
+    print("S",S.shape)
+    """
+    x = V.transpose()*np.linalg.solve(S,U[:,:2].transpose()*b)
+    """
+    print(x)
+    print(np.linalg.norm(A*x - b))
+    print(np.linalg.norm(A*np.matrix([[1],[1]]) - b))
+    print(A)
+    
+    print(np.linalg.norm(A*x - b))
+    """
+    
+    return np.linalg.norm(A*x - b)
 
 
-def TTT(Centroids,Test):
+def TTT(Centroids,Test,func):
     Te = []
     P = [0]*10 # pourcentage vrai positifs
     for i in range(10):
-        T = np.diff(Centroids[i])
-        T = np.hstack([T,np.array([0])])
-        T = np.matrix(T).transpose()
+        T = np.matrix(func(Centroids[i]))
+        T = T.transpose()
         Te.append(T)
     for i in range(10):
         print("chiffre ",i)
         for j in range(len(Test[i])):
             x = [0]*10
             for k in range(10):
-                x[k]= find_min_translate_x(Test[i][j],Te[k],Centroids[i])
+                x[k]= find_min(Test[i][j],Te[k],Centroids[k],func)
             T = np.argmin(x)
             #print(T,i)
             if T == i:

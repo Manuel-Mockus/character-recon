@@ -43,16 +43,17 @@ else:
     Centroids = fn.centroids(Training)
     TTT = fn.TTT(Centroids,Test)
     """
-    #print(fn.TTT(Centroids,Test))
+    
     Centroids = fn.centroids(Training)
-    print(Centroids[1].shape)
-    img = Test[1][203]
-    img2 = fn.Translation(img, 2)
-    T = np.matrix(np.diff(img2))
-    print(T.shape)
-    T = np.stack([T,np.array([0])])
-    #T = np.matrix(T).transpose()
-    print(fn.find_min_translate_x(img,T,img2))
+    img = Test[5][259]
+    
+
+    img2 = fn.Translation(img, 4)
+    T = fn.diff_rotate(img)
+    #fn.Afficher(T)
+    T = np.matrix(T).transpose()
+    #print(fn.find_min(img,T,img2,fn.diff_rotate))
+    print(fn.TTT(Centroids,Test,fn.diff_rotate))
     
     
 #fn.Report(report,algo,write = True)
