@@ -49,11 +49,12 @@ else:
     
 
     img2 = fn.Translation(img, 4)
-    T = fn.diff_rotate(img)
+    #T = fn.diff_rotate(img)
     #fn.Afficher(T)
-    T = np.matrix(T).transpose()
+    #T = np.matrix(T).transpose()
     #print(fn.find_min(img,T,img2,fn.diff_rotate))
-    print(fn.TTT(Centroids,Test,fn.diff_rotate))
+    transfo = [fn.diff_x,fn.diff_y,fn.diff_rotate,fn.diff_scaling,fn.diff_PHT,fn.diff_DHT,fn.diff_thickening]
+    print(fn.TTT2(Centroids,Test,transfo))
     
     
 #fn.Report(report,algo,write = True)

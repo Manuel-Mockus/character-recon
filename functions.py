@@ -460,6 +460,32 @@ def find_min(p,Te,e,func):
 
     return np.linalg.norm(A*x - b)
 
+def find_min2(p,Te,e,funcs):
+    A = Te
+    l = len(funcs)
+    for k in range(l) :
+        Tp = funcs[k](p)
+        Tp = np.matrix(Tp).transpose()
+        A = np.hstack([-Tp,A])
+    U,S1,V = np.linalg.svd(A)
+    b = np.transpose([p-e])
+    S = np.matrix(np.diag(S1))
+    """
+    print("V",V.shape)
+    print("U",U.shape)
+    print("S",S.shape)
+"""
+    x = V.transpose()*np.linalg.solve(S,U[:,:2*l].transpose()*b)
+    """
+    print(x)
+    print(np.linalg.norm(A*x - b))
+    print(np.linalg.norm(A*np.matrix([[1],[1]]) - b))
+    prinhttp://www.np.hstack/t(A)
+
+    print(np.linalg.norm(A*x - b))
+    """
+
+    return np.linalg.norm(A*x - b)
 
 def TTT(Centroids,Test,func):
     Te = []
@@ -474,6 +500,32 @@ def TTT(Centroids,Test,func):
             x = [0]*10
             for k in range(10):
                 x[k]= find_min(Test[i][j],Te[k],Centroids[k],func)
+            T = np.argmin(x)
+            #print(T,i)
+            if T == i:
+                P[i] += 1
+
+    P.append(sum(P)/sum([len(Test[i]) for i in range(10)]))
+    for i in range(10) :
+        P[i] /= len(Test[i])
+    return P
+
+def TTT2(Centroids,Test,funcs):
+    Te = []
+    P = [0]*10 # pourcentage vrai positifs
+    for i in range(10):
+        TT = np.array([]).reshape(28*28,0)
+        for j in range(len(funcs)) :
+            T = np.matrix(funcs[j](Centroids[i]))
+            T = T.transpose()
+            TT = np.hstack([T,TT])
+        Te.append(TT)
+    for i in range(10):
+        print("chiffre ",i)
+        for j in range(len(Test[i])):
+            x = [0]*10
+            for k in range(10):
+                x[k]= find_min2(Test[i][j],Te[k],Centroids[k],funcs)
             T = np.argmin(x)
             #print(T,i)
             if T == i:
