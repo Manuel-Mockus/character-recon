@@ -36,7 +36,7 @@ elif algo == 2 :
     #report = fn.SVD_show_3D(Test,bases,4,8,13)
     #report = fn.SVD_show_2D(Test,bases,10,0.95,0.999)
 
-else:
+elif algo == 3:
     """
     for i in range(10):
         for j in range(10):
@@ -46,8 +46,6 @@ else:
     
     Centroids = fn.centroids(Training)
     img = Test[5][259]
-    
-
     img2 = fn.Translation(img, 4)
     #T = fn.diff_rotate(img)
     #fn.Afficher(T)
@@ -55,9 +53,14 @@ else:
     #print(fn.find_min(img,T,img2,fn.diff_rotate))
     transfo = [fn.diff_x,fn.diff_y,fn.diff_rotate,fn.diff_scaling,fn.diff_PHT,fn.diff_DHT,fn.diff_thickening]
     print(fn.TTT2(Centroids,Test,transfo))
-    
-    
-#fn.Report(report,algo,write = True)
+
+else:
+    Centroids = fn.centroids(Training)
+    Test2 = fn.randomize_database(Test,3,np.pi/6,0.2)
+    transfo = [fn.diff_x,fn.diff_y,fn.diff_rotate,fn.diff_scaling,fn.diff_PHT,fn.diff_DHT,fn.diff_thickening]
+    print(fn.TTT2(Centroids,Test2,transfo))
+    report = fn.testNorm(Test2,Centroids,3)
+    fn.Report(report,1,write = True)
 
 
 

@@ -6,6 +6,9 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import sys
 from scipy.signal import convolve2d
+from scipy.ndimage import zoom,rotate
+
+from scipy.misc import imresize
 
 ###########################################
 #Variables globales:
@@ -369,11 +372,101 @@ def SVD_show_2D(Test,bases,nb_t,min_t,max_t):
 
 def Translation(img,k,axis = 1):
     #axis  1 = x, 0 = y
+    if k == 0:
+        return img
     img1 = np.copy(img)
     img1 = img1.reshape(28,28)
     img1 = np.roll(img1, k, axis) # translation en X
     img1 = img1.reshape(784)
     return img1
+
+def Rotation(img,a):
+    #alpha en degrées.
+    if a == 0:
+        return img
+    img1 = np.copy(img)
+    img1 = img1.reshape(28,28) 
+    img2 = rotate(img1,a,reshape = False,cval = 255)
+    return img2.reshape(784)
+
+def Scaling(img,a):
+    img1 = np.copy(img)
+    img1 = img1.reshape(28,28) 
+    img2 = zoom(img1,a,cval = 255)
+    n,m = img2.shape
+    if n%2 == 1: # nombre de pixels impair on ajoute un padding de 1 pixel
+        img2 = np.pad(img2,((1,0),(1,0)),'constant',constant_values = 255)
+    if n < 28:
+        img2 = np.pad(img2,(28-n)//2,'constant',constant_values = 255)
+    if n > 28:
+        newn = (n-28)//2
+        img2 = img2[newn:newn+28,newn:newn+28]
+    return img2.reshape(784)
+
+def PHT(img,a,axis = 0):
+    # axis X = 0, Y = 1
+    if a == 1:
+        return img
+    img1 = np.copy(img)
+    img1 = img1.reshape(28,28) 
+    factor = int(a*28)
+    if factor%2 == 1:
+        factor += 1
+    if a < 1:
+        if axis == 1:
+            img1 = imresize(img1,(factor,28))
+            img1 = np.pad(img1,(((28-factor)//2,(28-factor)//2),(0,0)),'constant',constant_values = 255)
+        else:
+            img1 = imresize(img1,(28,factor))
+            img1 = np.pad(img1,((0,0),((28-factor)//2,(28-factor)//2)),'constant',constant_values = 255)
+    else:
+        if axis == 1:
+            img1 = imresize(img1,(factor,28))
+            x = (factor-28)//2
+            img1 = img1[x:x+28,:]
+        else:
+            img1 = imresize(img1,(28,factor))
+            y = (factor-28)//2
+            img1 = img1[:,y:y+28]
+        
+    return img1.reshape(784)
+
+
+def randomize_database(Data,n_x,n_a,n_s):
+    R_x = range(-n_x,n_x+1)
+    R_a = np.linspace(-n_a,n_a,10)
+    R_s = np.linspace(1-n_s,1+n_s,10)
+    I = [[]for i in range(10)]
+    for i in range(len(Data)):
+        print("randomizing #",i) 
+        for j in range(len(Data[i])):
+            choice = random.choice(range(5))
+            if choice == 0:  #Translation en X
+                x = random.choice(R_x)
+                I[i].append(Translation(Data[i][j],x,axis = 0))
+                            
+            elif choice == 1:#translation en y
+                x = random.choice(R_x)
+                I[i].append(Translation(Data[i][j],x,axis = 1))
+                            
+            elif choice == 2:#rotation
+                a = random.choice(R_a)
+                I[i].append(Rotation(Data[i][j],a))
+
+            elif choice == 3:#Scaling
+                s = random.choice(R_s)
+                I[i].append(Scaling(Data[i][j],s))
+                
+            elif choice == 4:#PHT selon x
+                s = random.choice(R_s)
+                I[i].append(PHT(Data[i][j],s,axis = 0))
+
+            elif choice == 5:#PHT selon y
+                s = random.choice(R_s)
+                I[i].append(PHT(Data[i][j],s,axis = 1))
+    return I
+
+
 
 def diff_x(img):
     I = 255 - img.reshape(28,28)
@@ -535,3 +628,9 @@ def TTT2(Centroids,Test,funcs):
     for i in range(10) :
         P[i] /= len(Test[i])
     return P
+
+def generate_random_DB(Data, percentagefuncs):
+    Data_M = [[]for i in range(10)]
+    for i in range(10):
+        for i in range(len(Data[i])):
+            r = random.rando
