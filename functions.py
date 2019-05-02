@@ -7,6 +7,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import sys
 from scipy.signal import convolve2d
 from scipy.ndimage import zoom,rotate
+import cv2
 
 from scipy.misc import imresize
 
@@ -432,6 +433,15 @@ def PHT(img,a,axis = 0):
     return img1.reshape(784)
 
 
+
+def Thickening(img,a):
+    kernel = np.ones((5,5),np.uint8)
+    img2 = np.copy(img)
+    img2 = img2.reshape((28,28))
+    return cv2.dilate(img2,kernel,iterations = a).reshape(784)
+        
+
+
 def randomize_database(Data,n_x,n_a,n_s):
     R_x = range(-n_x,n_x+1)
     R_a = np.linspace(-n_a,n_a,10)
@@ -464,6 +474,7 @@ def randomize_database(Data,n_x,n_a,n_s):
             elif choice == 5:#PHT selon y
                 s = random.choice(R_s)
                 I[i].append(PHT(Data[i][j],s,axis = 1))
+                
     return I
 
 
@@ -629,8 +640,3 @@ def TTT2(Centroids,Test,funcs):
         P[i] /= len(Test[i])
     return P
 
-def generate_random_DB(Data, percentagefuncs):
-    Data_M = [[]for i in range(10)]
-    for i in range(10):
-        for i in range(len(Data[i])):
-            r = random.rando

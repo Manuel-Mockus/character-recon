@@ -54,6 +54,16 @@ elif algo == 3:
     transfo = [fn.diff_x,fn.diff_y,fn.diff_rotate,fn.diff_scaling,fn.diff_PHT,fn.diff_DHT,fn.diff_thickening]
     print(fn.TTT2(Centroids,Test,transfo))
 
+else :
+    
+    img = Test[5][263]
+    fn.Afficher(img)
+    img2 = fn.Thickening(img,1)
+    fn.Afficher(img2)
+    
+
+    
+"""
 else:
     Centroids = fn.centroids(Training)
     Test2 = fn.randomize_database(Test,3,np.pi/6,0.2)
@@ -61,6 +71,7 @@ else:
     print(fn.TTT2(Centroids,Test2,transfo))
     report = fn.testNorm(Test2,Centroids,3)
     fn.Report(report,1,write = True)
+"""
 
 
 
