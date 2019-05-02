@@ -1,15 +1,12 @@
 import scipy.io as sio
 import numpy as np
-#from PIL import Image
+from PIL import Image
 import random
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import sys
-from scipy.signal import convolve2d
-from scipy.ndimage import zoom,rotate
-#import cv2
-
-#from scipy.misc import imresize
+from scipy import ndimage, misc, signal
+import cv2
 
 ###########################################
 #Variables globales:
@@ -386,14 +383,14 @@ def Rotation(img,a):
     if a == 0:
         return img
     img1 = np.copy(img)
-    img1 = img1.reshape(28,28)
-    img2 = rotate(img1,a,reshape = False,cval = 255)
+    img1 = img1.reshape(28,28) 
+    img2 = ndimage.rotate(img1,a,reshape = False,cval = 255)
     return img2.reshape(784)
 
 def Scaling(img,a):
     img1 = np.copy(img)
-    img1 = img1.reshape(28,28)
-    img2 = zoom(img1,a,cval = 255)
+    img1 = img1.reshape(28,28) 
+    img2 = ndimage.zoom(img1,a,cval = 255)
     n,m = img2.shape
     if n%2 == 1: # nombre de pixels impair on ajoute un padding de 1 pixel
         img2 = np.pad(img2,((1,0),(1,0)),'constant',constant_values = 255)
@@ -409,72 +406,98 @@ def PHT(img,a,axis = 0):
     if a == 1:
         return img
     img1 = np.copy(img)
-    img1 = img1.reshape(28,28)
+    img1 = img1.reshape(28,28) 
     factor = int(a*28)
     if factor%2 == 1:
         factor += 1
     if a < 1:
         if axis == 1:
-            img1 = imresize(img1,(factor,28))
+            img1 = misc.imresize(img1,(factor,28))
             img1 = np.pad(img1,(((28-factor)//2,(28-factor)//2),(0,0)),'constant',constant_values = 255)
         else:
-            img1 = imresize(img1,(28,factor))
+            img1 = misc.imresize(img1,(28,factor))
             img1 = np.pad(img1,((0,0),((28-factor)//2,(28-factor)//2)),'constant',constant_values = 255)
     else:
         if axis == 1:
-            img1 = imresize(img1,(factor,28))
+            img1 = misc.imresize(img1,(factor,28))
             x = (factor-28)//2
             img1 = img1[x:x+28,:]
         else:
-            img1 = imresize(img1,(28,factor))
+            img1 = misc.imresize(img1,(28,factor))
             y = (factor-28)//2
             img1 = img1[:,y:y+28]
-
+        
     return img1.reshape(784)
 
 
-
-def Thickening(img,a):
-    kernel = np.ones((5,5),np.uint8)
+# A REVOIR / ELIMINER
+def Thickening(img,a, thicken = True):
+    kernel = np.ones((3,3),np.uint8)
     img2 = np.copy(img)
-    img2 = img2.reshape((28,28))
-    return cv2.dilate(img2,kernel,iterations = a).reshape(784)
+    if thicken:
+        img2 = 255 - img2.reshape((28,28))
+        
+    kernel = np.ones((5,5), np.uint8)
+    img_d = cv2.dilate(img2, kernel, iterations=1)
+    #ndimage.grey_dilation(img.reshape((28,28)), size = (3,3), structure = np.ones((3,3)))
+    if thicken:
+        return 255 - img_d.reshape(784)
+    return img_d.reshape(784)
 
 
+#A REVOIR / ELIMINER
+def DHT(img,a):
+    img1 = np.copy(img).reshape(28,28)
+    img2 = np.full((28,28),255)
+    for x in range(28):
+        for y in range(28):
+            # On verifie que les indices ne depassent pas les bords
+            # Manque l'interpolation
+            new_x = max(0,x+int(a*y))
+            new_x = min(27,x+int(a*y))
+            new_y = max(0,y+int(a*x))
+            new_y = min(27,y+int(a*x))
+            img2[x,y] = img1[new_x,new_y]
+    return img2.reshape(784)
 
-def randomize_database(Data,n_x,n_a,n_s):
+            
+
+
+def randomize_database(Data,n_x,n_a,n_s,nb_transformations):
     R_x = range(-n_x,n_x+1)
     R_a = np.linspace(-n_a,n_a,10)
     R_s = np.linspace(1-n_s,1+n_s,10)
     I = [[]for i in range(10)]
     for i in range(len(Data)):
-        print("randomizing #",i)
+        print("randomizing #",i) 
         for j in range(len(Data[i])):
-            choice = random.choice(range(5))
-            if choice == 0:  #Translation en X
-                x = random.choice(R_x)
-                I[i].append(Translation(Data[i][j],x,axis = 0))
+            transfo = Data[i][j]
+            for n in range(nb_transformations):
+                choice = random.choice(range(5))
+                if choice == 0:  #Translation en X
+                    x = random.choice(R_x)
+                    transfo = Translation(transfo,x,axis = 0)
+                
+                elif choice == 1:#translation en y
+                    x = random.choice(R_x)
+                    transfo = Translation(transfo,x,axis = 1)
+                
+                elif choice == 2:#rotation
+                    a = random.choice(R_a)
+                    transfo = Rotation(transfo,a)
 
-            elif choice == 1:#translation en y
-                x = random.choice(R_x)
-                I[i].append(Translation(Data[i][j],x,axis = 1))
+                elif choice == 3:#Scaling
+                    s = random.choice(R_s)
+                    transfo = Scaling(transfo,s)
+                
+                elif choice == 4:#PHT selon x
+                    s = random.choice(R_s)
+                    transfo = PHT(transfo,s,axis = 0)
 
-            elif choice == 2:#rotation
-                a = random.choice(R_a)
-                I[i].append(Rotation(Data[i][j],a))
-
-            elif choice == 3:#Scaling
-                s = random.choice(R_s)
-                I[i].append(Scaling(Data[i][j],s))
-
-            elif choice == 4:#PHT selon x
-                s = random.choice(R_s)
-                I[i].append(PHT(Data[i][j],s,axis = 0))
-
-            elif choice == 5:#PHT selon y
-                s = random.choice(R_s)
-                I[i].append(PHT(Data[i][j],s,axis = 1))
-
+                elif choice == 5:#PHT selon y
+                    s = random.choice(R_s)
+                    transfo = PHT(transfo,s,axis = 1)
+            I.append(transfo)
     return I
 
 
@@ -482,14 +505,14 @@ def randomize_database(Data,n_x,n_a,n_s):
 def diff_x(img):
     I = 255 - img.reshape(28,28)
     filtre_x = np.array([[0,0,0],[-1,1,0],[0,0,0]])
-    Ix = convolve2d(I,filtre_x)
+    Ix = signal.convolve2d(I,filtre_x)
     Ix = Ix[1:-1,1:-1]
     return Ix.reshape(784)
 
 def diff_y(img):
     I = 255 - img.reshape(28,28)
     filtre_y = np.array([[0,-1,0],[0,1,0],[0,0,0]])
-    Iy = convolve2d(I,filtre_y)
+    Iy = signal.convolve2d(I,filtre_y)
     Iy = Iy[1:-1,1:-1]
     return Iy.reshape(784)
 
@@ -574,11 +597,7 @@ def find_min2(p,Te,e,funcs):
     U,S1,V = np.linalg.svd(A)
     b = np.transpose([p-e])
     S = np.matrix(np.diag(S1))
-    """
-    print("V",V.shape)
-    print("U",U.shape)
-    print("S",S.shape)
-"""
+
     x = V.transpose()*np.linalg.solve(S,U[:,:2*l].transpose()*b)
     """
     print(x)
@@ -640,141 +659,3 @@ def TTT2(Centroids,Test,funcs):
         P[i] /= len(Test[i])
     return P
 
-
-
-'''
-Graphe complement
-'''
-
-I = read_database("dataset_Octave.mat")
-Training,Test = Separation(I)
-
-Cen = centroids(Training)
-img = Test[3][106]
-ab = np.array([-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6])
-dist = [[],[],[],[],[],[],[],[],[],[]]
-
-#Norme Euclidienne
-'''
-for i in range(10):
-    for j in range(len(ab)):
-        dist[i].append(np.linalg.norm(Cen[i]-Translation(img,ab[j])))
-    plt.plot(ab,dist[i],label = str(i))
-
-sol = 3
-
-for k in range(6):
-    intersections = []
-    for l in range(10):
-        if l != sol and dist[l][6+k+1] <= dist[sol][6+k+1]:
-            y1 = dist[l][6+k] - dist[sol][6+k]
-            y2 = dist[l][6+k+1] - dist[sol][6+k+1]
-            x = (-y1)/(y2-y1)
-            print(y1,y2,x)
-            y = dist[l][6+k] + x * (dist[l][6+k+1] - dist[l][6+k])
-            intersections.append((k+x,y))
-    if len(intersections) != 0:
-        val = 0
-        indice = 0
-        for m in range(len(intersections)):
-            if intersections[m][0] < val:
-                indice = m
-                val = intersections[m]
-        x,y = intersections[indice]
-        break
-
-plt.plot(np.array([x,x]),np.array([dist[sol][6],y]),'--')
-
-for k in range(6):
-    intersections = []
-    for l in range(10):
-        if l != sol and dist[l][6-(k+1)] <= dist[sol][6-(k+1)]:
-            y1 = dist[l][6-k] - dist[sol][6-k]
-            y2 = dist[l][6-k-1] - dist[sol][6-k-1]
-            x = (-y1)/(y2-y1)
-            print(y1,y2,x)
-            y = dist[l][6-k] + x * (dist[l][6-k-1] - dist[l][6-k])
-            intersections.append((-k-x,y))
-    if len(intersections) != 0:
-        val = 0
-        indice = 0
-        for m in range(len(intersections)):
-            if intersections[m][0] < val:
-                indice = m
-                val = intersections[m]
-        x,y = intersections[indice]
-        break
-
-plt.plot(np.array([x,x]),np.array([dist[sol][6],y]),'--')
-
-plt.xlabel('Valeur de la translation')
-plt.ylabel('Distance aux centroids')
-plt.title('Distance Euclidienne')
-plt.legend()
-plt.show()
-'''
-
-#Distance tangente
-
-Te = []
-for i in range(10):
-    T = np.matrix(diff_x(Cen[i]))
-    T = T.transpose()
-    Te.append(T)
-
-for i in range(10):
-    for j in range(len(ab)):
-        dist[i].append(find_min(Translation(img,ab[j]),Te[i],Cen[i],diff_x))
-    plt.plot(ab,dist[i],label = str(i))
-
-sol = 3
-
-for k in range(6):
-    intersections = []
-    for l in range(10):
-        if l != sol and dist[l][6+k+1] <= dist[sol][6+k+1]:
-            y1 = dist[l][6+k] - dist[sol][6+k]
-            y2 = dist[l][6+k+1] - dist[sol][6+k+1]
-            x = (-y1)/(y2-y1)
-            print(y1,y2,x)
-            y = dist[l][6+k] + x * (dist[l][6+k+1] - dist[l][6+k])
-            intersections.append((k+x,y))
-    if len(intersections) != 0:
-        val = 0
-        indice = 0
-        for m in range(len(intersections)):
-            if intersections[m][0] < val:
-                indice = m
-                val = intersections[m]
-        x,y = intersections[indice]
-        break
-
-plt.plot(np.array([x,x]),np.array([dist[sol][6],y]),'--')
-
-for k in range(6):
-    intersections = []
-    for l in range(10):
-        if l != sol and dist[l][6-(k+1)] <= dist[sol][6-(k+1)]:
-            y1 = dist[l][6-k] - dist[sol][6-k]
-            y2 = dist[l][6-k-1] - dist[sol][6-k-1]
-            x = (-y1)/(y2-y1)
-            print(y1,y2,x)
-            y = dist[l][6-k] + x * (dist[l][6-k-1] - dist[l][6-k])
-            intersections.append((-k-x,y))
-    if len(intersections) != 0:
-        val = 0
-        indice = 0
-        for m in range(len(intersections)):
-            if intersections[m][0] < val:
-                indice = m
-                val = intersections[m]
-        x,y = intersections[indice]
-        break
-
-plt.plot(np.array([x,x]),np.array([dist[sol][6],y]),'--')
-
-plt.xlabel('Valeur de la translation')
-plt.ylabel('Distance aux centroids')
-plt.title('Distance tangente')
-plt.legend()
-plt.show()
