@@ -1,6 +1,5 @@
 import scipy.io as sio
 import numpy as np
-from PIL import Image
 import random
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -67,8 +66,8 @@ def centroids(Training):
     return L
 
 # Test d'une image: retourne le chiffre le plus proche selon la norme de 'MIK....' N
-def test(Image,Centroids,N):
-    return np.argmin([np.linalg.norm(Centroids[i]-Image,N) for i in range(10)])
+def test(image,Centroids,N):
+    return np.argmin([np.linalg.norm(Centroids[i]-image,N) for i in range(10)])
 
 
 def pourcentage(Test,Centroids,N):
@@ -431,7 +430,7 @@ def PHT(img,a,axis = 0):
 
 
 # A REVOIR / ELIMINER
-def Thickening(img,a, thicken = True):
+def Thickening(img, thicken = True):
     kernel = np.ones((3,3),np.uint8)
     img2 = np.copy(img)
     if thicken:
@@ -439,20 +438,17 @@ def Thickening(img,a, thicken = True):
         
     kernel = np.ones((5,5), np.uint8)
     img_d = cv2.dilate(img2, kernel, iterations=1)
-    #ndimage.grey_dilation(img.reshape((28,28)), size = (3,3), structure = np.ones((3,3)))
     if thicken:
         return 255 - img_d.reshape(784)
     return img_d.reshape(784)
 
 
-#A REVOIR / ELIMINER
 def DHT(img,a):
     img1 = np.copy(img).reshape(28,28)
     img2 = np.full((28,28),255)
     for x in range(28):
         for y in range(28):
             # On verifie que les indices ne depassent pas les bords
-            # Manque l'interpolation
             new_x = max(0,x+int(a*y))
             new_x = min(27,x+int(a*y))
             new_y = max(0,y+int(a*x))
@@ -473,11 +469,10 @@ def randomize_database(Data,n_x,n_a,n_s,nb_transformations):
         for j in range(len(Data[i])):
             transfo = Data[i][j]
             for n in range(nb_transformations):
-                choice = random.choice(range(5))
+                choice = random.choice(range(7))
                 if choice == 0:  #Translation en X
                     x = random.choice(R_x)
                     transfo = Translation(transfo,x,axis = 0)
-                
                 elif choice == 1:#translation en y
                     x = random.choice(R_x)
                     transfo = Translation(transfo,x,axis = 1)
@@ -497,7 +492,12 @@ def randomize_database(Data,n_x,n_a,n_s,nb_transformations):
                 elif choice == 5:#PHT selon y
                     s = random.choice(R_s)
                     transfo = PHT(transfo,s,axis = 1)
-            I.append(transfo)
+                    
+                elif choice == 6:
+                    s = random.choice(R_s)
+                    transfo = DHT(transfo,s)
+                    
+            I[i].append(transfo)
     return I
 
 
@@ -661,3 +661,149 @@ def TTT2(Centroids,Test,funcs):
         P[i] /= len(Test[i])
     return P
 
+'''
+Graphe complement
+'''
+
+
+I = read_database("dataset_Octave.mat")
+Training,Test = Separation(I)
+
+Cen = centroids(Training)
+#img = Test[3][106]
+sol = 3
+img = Cen[sol]
+ab = np.array([-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6])
+dist = [[],[],[],[],[],[],[],[],[],[]]
+
+
+#Norme Euclidienne
+
+for i in range(10):
+    for j in range(len(ab)):
+        dist[i].append(np.linalg.norm(Cen[i]-Translation(img,ab[j])))
+    plt.plot(ab,dist[i],label = str(i))
+
+x = 6
+y = 1
+    
+for k in range(6):
+    intersections = []
+    for l in range(10):
+        if l != sol and dist[l][6+k+1] <= dist[sol][6+k+1]:
+            y1 = dist[l][6+k] - dist[sol][6+k]
+            y2 = dist[l][6+k+1] - dist[sol][6+k+1]
+            x = (-y1)/(y2-y1)
+            print(y1,y2,x)
+            y = dist[l][6+k] + x * (dist[l][6+k+1] - dist[l][6+k])
+            intersections.append((k+x,y))
+    if len(intersections) != 0:
+        val = 0
+        indice = 0
+        for m in range(len(intersections)):
+            if intersections[m][0] < val:
+                indice = m
+                val = intersections[m]
+        x,y = intersections[indice]
+        break
+plt.plot(np.array([x,x]),np.array([dist[sol][6],y]),'--')
+
+x = -6
+y = 1
+
+for k in range(6):
+    intersections = []
+    for l in range(10):
+        if l != sol and dist[l][6-(k+1)] <= dist[sol][6-(k+1)]:
+            y1 = dist[l][6-k] - dist[sol][6-k]
+            y2 = dist[l][6-k-1] - dist[sol][6-k-1]
+            x = (-y1)/(y2-y1)
+            print(y1,y2,x)
+            y = dist[l][6-k] + x * (dist[l][6-k-1] - dist[l][6-k])
+            intersections.append((-k-x,y))
+    if len(intersections) != 0:
+        val = 0
+        indice = 0
+        for m in range(len(intersections)):
+            if intersections[m][0] < val:
+                indice = m
+                val = intersections[m]
+        x,y = intersections[indice]
+        break
+plt.plot(np.array([x,x]),np.array([dist[sol][6],y]),'--')
+plt.xlabel('Valeur de la translation')
+plt.ylabel('Distance aux images moyennes')
+plt.title('Distance Euclidienne')
+plt.legend()
+plt.show()
+
+
+#Distance tangente
+
+dist = [[],[],[],[],[],[],[],[],[],[]]
+Te = []
+for i in range(10):
+    T = np.matrix(diff_x(Cen[i]))
+    T = T.transpose()
+    Te.append(T)
+
+for i in range(10):
+    for j in range(len(ab)):
+        dist[i].append(find_min(Translation(img,ab[j]),Te[i],Cen[i],diff_x))
+    plt.plot(ab,dist[i],label = str(i))
+
+
+x = 6
+y = 1
+
+for k in range(6):
+    intersections = []
+    for l in range(10):
+        if l != sol and dist[l][6+k+1] <= dist[sol][6+k+1]:
+            y1 = dist[l][6+k] - dist[sol][6+k]
+            y2 = dist[l][6+k+1] - dist[sol][6+k+1]
+            x = (-y1)/(y2-y1)
+            print(y1,y2,x)
+            y = dist[l][6+k] + x * (dist[l][6+k+1] - dist[l][6+k])
+            intersections.append((k+x,y))
+    if len(intersections) != 0:
+        val = 0
+        indice = 0
+        for m in range(len(intersections)):
+            if intersections[m][0] < val:
+                indice = m
+                val = intersections[m]
+        x,y = intersections[indice]
+        break
+
+plt.plot(np.array([x,x]),np.array([dist[sol][6],y]),'--')
+
+x = -6
+y = 1
+for k in range(6):
+    intersections = []
+    for l in range(10):
+        if l != sol and dist[l][6-(k+1)] <= dist[sol][6-(k+1)]:
+            y1 = dist[l][6-k] - dist[sol][6-k]
+            y2 = dist[l][6-k-1] - dist[sol][6-k-1]
+            x = (-y1)/(y2-y1)
+            print(y1,y2,x)
+            y = dist[l][6-k] + x * (dist[l][6-k-1] - dist[l][6-k])
+            intersections.append((-k-x,y))
+    if len(intersections) != 0:
+        val = 0
+        indice = 0
+        for m in range(len(intersections)):
+            if intersections[m][0] < val:
+                indice = m
+                val = intersections[m]
+        x,y = intersections[indice]
+        break
+
+plt.plot(np.array([x,x]),np.array([dist[sol][6],y]),'--')
+
+plt.xlabel('Valeur de la translation')
+plt.ylabel('Distance aux images moyennes')
+plt.title('Distance tangente')
+plt.legend()
+plt.show()

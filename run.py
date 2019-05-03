@@ -1,6 +1,5 @@
 import scipy.io as sio
 import numpy as np
-from PIL import Image
 import random
 import matplotlib.pyplot as plt
 import sys
@@ -56,10 +55,23 @@ elif algo == 3:
 
 else:
     Centroids = fn.centroids(Training)
+    img = Test[3][12]
+    fn.Afficher(img)
+    img2 = fn.DHT(img,-0.2)
+    fn.Afficher(img2)
+
+    """
     Test1 = fn.randomize_database(Test,3,np.pi/6,0.2,1)
     Test2 = fn.randomize_database(Test,3,np.pi/6,0.2,2)
     Test3 = fn.randomize_database(Test,3,np.pi/6,0.2,3)
     transfo = [fn.diff_x,fn.diff_y,fn.diff_rotate,fn.diff_scaling,fn.diff_PHT,fn.diff_DHT,fn.diff_thickening]
+
+    fn.Afficher(Test[5][266])
+    fn.Afficher(Test1[5][266])
+    fn.Afficher(Test2[5][266])
+    fn.Afficher(Test3[5][266])
+
+    
     print("test base normale")
     print(fn.TTT2(Centroids,Test,transfo))
     print("test base randomize 1")
@@ -72,7 +84,7 @@ else:
     report = fn.testNorm(Test2,Centroids,3)
     fn.Report(report,1,write = True)
 
-"""
+
 else :
     
     img = Test[5][26]

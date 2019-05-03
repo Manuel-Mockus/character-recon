@@ -17,7 +17,7 @@
 \tableofcontents
 \chapter{Introduction}
 Le cœur du projet est d'écrire un code permettant de reconnaître automatiquement des caractères manuscrits, le but étant de se familiariser avec des méthodes usuelles de reconnaissance de forme en les implémentant pour un cas particulier et en en comprenant la théorie. 
-Nous utiliserons comme référence le travail de Lars Elden "Matrix Methods in Data Mining and Pattern Recognition  \cite{Elden:1}". \\
+Nous utiliserons comme référence le travail de Lars Elden "Matrix Methods in Data Mining and Pattern Recognition  \cite{Elden:1}" \cite{Simard:2}. \\
 
 Les caractères à analyser seront ici des chiffres de 1 à 9 sous forme de vecteurs de taille $(28\times28,1)$ à valeurs entières comprise entre 0 et 255 : chaque vecteur représente une image de taille $28\times28$ en nuance de gris (0 = noir, blanc = 255). Nous disposons d'une base de données de 70000 chiffres manuscrits labellisés stockés sous le format décrit précédemment.\\
  
@@ -149,18 +149,80 @@ On remarque que l'efficacité de l'algorithme est croissante en fonction du nomb
 En faisant varier k entre 1 et 30, on remarque que l'efficacité de l'algorithme se stabilise à partir de k=20.De plus le nombre de vecteurs de base $k$ choisi n'influe pas significativement sur la complexité des calculs : en effet seul le calcul de $I-U_{k}U_{k}^{T}$ dépend de $k$ et il est effectué une seule fois pour chaque chiffre. On fixe donc par la suite k=20.
 
 \chapter{Distance tangente}
+\subsection{Théorie}
+On souhaite désormais affranchir notre algorithme des erreurs liées aux petites variations usuelles que nos chiffres peuvent connaître lorsque qu'un humain les écrits. En effet il est courant dans une base de données réelle que les chiffres soient légèrement décalés, dilatés ou encore épaissis. Afin d'expliciter la méthode plus simplement, on va d'abord s’intéresser uniquement à rendre notre algorithme insensible à la translation en X. \\
+Si on considère une image I comme un point dans $\textbf{R}^{784}$, l'ensemble des I translatés est une courbe continue dans $\textbf{R}^{784}$. On peut décrire l'ensemble des points de cette courbe, comme l'image de $\textbf{R}$ par la fonction f(x) = s(I,x), où s(I,$\alpha$) est l'élément de  $\textbf{R}^{784}$ correspondant à I décalé de $\alpha$ sur l'axe des X. P étant un autre élément de $\textbf{R}^{784}$, on cherche alors à établir la distance minimale entre un translaté de I et de P. Idéalement on aimerai donc définir la distance suivante, : $d(I,P)= min_{\alpha,\beta \in \textbf{R}} (||s(I,\alpha)-s(P,\beta)||)$. Cependant il serait inutile d'essayer d'implémenter cette distance, puisque son calcul est très complexe et qu'on ne s’intéresse ici qu'à de petites translations. On va donc utiliser des approximations à l'ordre 1 des courbes des translatés, valables pour des petites valeurs de $\alpha et \beta$. On effectue un développement de Taylor et on obtient:$$s(I,\alpha)\approx s(I,0) + \frac{ds}{d\alpha}(I,0)*\alpha=I + \frac{ds}{d\alpha}(I,0)*\alpha$$.\\
+Ainsi on peut définir une nouvelle distance plus simple, à peu près équivalente au voisinage de 0: $d_{2}(I,P)= min_{\alpha,\beta \in \textbf{R}} (||I+\frac{ds}{d\alpha}(I,0)*\alpha-P+\frac{ds}{d\beta}(P,0)*\beta)||)$. Or $\frac{ds}{d\alpha}(I,0)$ est indépendant de $\alpha$, on peut donc le noter $t_{I}$ et ainsi réécrire notre distance ainsi: $d_{2}(I,P)= min_{\alpha,\beta \in \textbf{R}} (||(I-P)-\begin{pmatrix}-t_{I} & t_{P}\end{pmatrix} \begin{pmatrix}\alpha \\ \beta\end{pmatrix} ||)$. 
+ A condition que la norme utilisée soit la norme euclidienne, le calcul de cette distance est un problème des moindres carrés. On le résout grâce au théorème suivant : soit $A$ une matrice de rang plein de décomposition en valeurs singulières $A = U\Sigma V^T$, le problème des moindres carrés $min_x\norm{Ax-b}_2$ a pour unique solution $$x = V\Sigma^{-1}U_1^Tb$$ Ici $A = \begin{pmatrix}-T_{I} & T_{P}\end{pmatrix}$ et $b = (I-P)$.\\
+ \\
+Généralisons maintenant cette méthode au cas où l'image I peut avoir subit n transformations continues distinctes. L'espace affine des éléments correspondant aux I transformés, noté $C_{I}$ est alors de dimension n, car il est engendré par n courbes de dimension 1 (on peut à partir de I se déplacer dans $\textbf{R}^{784}$ suivant n courbes pour obtenir un I transformé, on voit bien qu'on peut décrire cet espace avec n paramètres). Soit P un autre élément de $\textbf{R}^{784}$ on souhaiterait comme précédemment pouvoir calculer la distance minimale entre $C_{I}$ et $C_{P}$ mais c'est impossible. On utilise donc à nouveau l'hypothèse que les transformations sont de petite ampleur, et on va approximer $C_{I}$ et $C_{P}$ par leur plans tangents en 0. Soit $\alpha$ dans $\textbf{R}^{n}$,on définit s la fonction tel que s(I,$\alpha$) soit l'élément de $\textbf{R}^{784}$ correspondant à I ayant subit pour tout i inférieur à n, la i-ème transformation avec un coefficient $\alpha_{i}$. $C_{I}$ est alors l'image par f(x)=s(I,x) de $\textbf{R}^{n}$, un développement de Taylor à l'ordre 1 permet alors d'expliciter le plan tangent à $C_{I}$ en I.
 
-On souhaite désormais affranchir notre algorithme des erreurs liées aux petites variations usuelles que nos chiffres peuvent connaitre lorsque qu'un humain les écrits. En effet il est courant dans une base de données réelle que les chiffres soient légérement décalés, dillatés ou encore épaissis. Afin d'expliciter la méthode plus simplement, on va d'abord s'interesser uniquement à rendre notre algorithme insensible à la translation en X. \\
-Si on considère une image I comme un point dans $\textbf{R}^{784}$, l'ensemble des I translatés est une courbe continue dans $\textbf{R}^{784}$. On peut décrire l'ensemble des points de cette courbe, comme l'image de $\textbf{R}$ par la fonction f(x) = s(I,x), où s(I,$\alpha$) est l'élément de  $\textbf{R}^{784}$ correspondant à I décalé de $\alpha$ sur l'axe des X. P étant un autre élément de $\textbf{R}^{784}$, on cherche alors à établir la distance minimale entre un translaté de I et de P. Idéalement on aimerai donc définir la distance suivante, : $d(I,P)= min_{\alpha,\beta \in \textbf{R}} (||s(I,\alpha)-s(P,\beta)||)$. Cependant il serait inutile d'essayer d'implémenter cette distance, puisque son calcul est très complexe et qu'on ne s'interesse ici qu'à de petites translations. On va donc utiliser des approximations à l'ordre 1 des courbes des translatés, valables pour des petites valeures de $\alpha et \beta$. On effectue un développement de Taylor et on obtient:$$s(I,\alpha)\approx s(I,0) + \frac{ds}{d\alpha}(I,0)*\alpha=I + \frac{ds}{d\alpha}(I,0)*\alpha$$.\\
-Ainsi on peut définir une nouvelle distance plus simple, à peu près équivalente au voisinnage de 0: $d_{2}(I,P)= min_{\alpha,\beta \in \textbf{R}} (||I+\frac{ds}{d\alpha}(I,0)*\alpha-P+\frac{ds}{d\beta}(P,0)*\beta)||)$. Or $\frac{ds}{d\alpha}(I,0)$ est indépendant de $\alpha$, on peut donc le noter $t_{I}$ et ainsi réécrire notre distance ainsi: $d_{2}(I,P)= min_{\alpha,\beta \in \textbf{R}} (||(I-P)-\begin{pmatrix}-t_{I} & t_{P}\end{pmatrix} \begin{pmatrix}\alpha \\ \beta\end{pmatrix} ||)$. A condition que la norme utilisée soit la norme euclidienne, calculer cette distance revient à résoudre un problème des moindres carrés.\\
-Généralisons maintenant cette méthode au cas où l'image I peut avoir subit n transformations continues distinctes. L'espace affine des éléments correspondant aux I transfomés, noté $C_{I}$ est alors de dimension n, car il est engendré par n courbes de dimension 1 (on peut à partir de I se déplacer dans $\textbf{R}^{784}$ suivant n courbes pour obtenir un I transfomé, on voit bien qu'on peut décrire cet espace avec n paramètres). Soit P un autre élément de $\textbf{R}^{784}$ on souhaiterai comme précédement pouvoir calculer la distance minimale entre $C_{I}$ et $C_{P}$ mais c'est impossible. On utilise donc à nouveau l'hypothèse que les transformations sont de petite ampleur, et on va approximer $C_{I}$ et $C_{P}$ par leur plans tangents en 0. Soit $\alpha$ dans $\textbf{R}^{n}$,on définit s la fonction tel que s(I,$\alpha$) soit l'élément de $\textbf{R}^{784}$ correspondant à I ayant subit pour tout i inférieur à n, la i-ième transformation avec un coefficient $\alpha_{i}$. $C_{I}$ est alors l'image par f(x)=s(I,x) de $\textbf{R}^{n}$, un développement de Taylor à l'ordre 1 permet alors d'expliciter le plan tangent à $C_{I}$ en I:
+\subsection{Pratique}
+
+Pour implémenter l'algorithme on considérera les transformations suivantes : la translation (en x et en y), la rotation, l'agrandissement et le rétrécissement, l'étirement (horizontal, vertical et diagonal), et l'épaississement. On implémente chaque transformation et sa dérivée.\\
+Par la suite on considérera les images comme des fonctions de deux variables $p(x,y)$ et on notera les dérivées partielles par rapport à x et y respectivement $p_x = \frac{dp}{dx}$ et $p_y = \frac{dp}{dy}$. Les images étant discrètes on calcule les dérivées par différences finies. 
+
+\subsubsection{Translation}
+La translation en $x$ de $\alpha_x$ pixels est donnée par la fonction $$s(p,\alpha_x)(x,y) = p(x+\alpha_x,y)$$ 
+En utilisant le développement de Taylor à l'ordre 1, on obtient :
+$$\frac{d}{d\alpha_x}(s(p,\alpha_x)(x,y))|_{\alpha_x=0} = \frac{d}{d\alpha_x}p(x+\alpha_x,y)|_{\alpha_x=0}=p_x(x,y)$$ 
+De façon analogue on obtient la translation en y et sa dérivée.
+
+\subsubsection{Rotation}
+La rotation d'angle $\alpha_r$ est donnée par la fonction $$s(p,\alpha_r)(x,y) = p(x\cos\alpha_r+y\sin\alpha_r,-x\sin\alpha_r+y\cos\alpha_r)$$ 
+Et sa dérivée par :
+$$\frac{d}{d\alpha_r}(s(p,\alpha_r)(x,y))= (-x\sin\alpha_r+y\cos\alpha_r)p_x - (x\cos\alpha_r+y\sin\alpha_r)p_y$$
+d'où
+$$\frac{d}{d\alpha_r}(s(p,\alpha_r)(x,y))|_{\alpha_r=0}=yp_x-xp_y$$ 
+où les dérivée sont évaluées en $(x,y)$
+
+\subsubsection{Agrandissement et rétrécissement}
+Les fonctions de changement d'échelle sont donnée par : $$s(p,\alpha_s)(x,y) = p((1+\alpha_s)x,(1+\alpha_s)y)$$  
+Et sa dérivée par :
+
+$$\frac{d}{d\alpha_s}s(p,\alpha_s)(x,y)|_{\alpha_s=0}=xp_x+yp_y$$ 
+
+\subsubsection{Étirement}
+L'étirement horizontal ou vertical est donné par : $$s(p,\alpha_p)(x,y) = p((1+\alpha_p)x,(1-\alpha_p)y)$$  
+Et sa dérivée par :
+
+$$\frac{d}{d\alpha_p}s(p,\alpha_p)(x,y)|_{\alpha_p=0}=xp_x-yp_y$$ 
+
+L'étirement diagonal est donné par : $$s(p,\alpha_p)(x,y) = p(x+\alpha_py,y+\alpha_px)$$  
+Et sa dérivée par :
+
+$$\frac{d}{d\alpha_p}s(p,\alpha_p)(x,y)|_{\alpha_p=0}=yp_x+xp_y$$ 
+
+\subsubsection{Épaississement}
+Pour l'épaississement on considérera seulement la dérivée \cite{Elden} : $$(p_x)^2+(p_y)^2$$
+
+\subsubsection{Distance euclidienne versus distance tangente}
+Cet algorithme différant de celui des écarts à la moyenne uniquement par la distance utilisée, on compare ces deux distances à chaque moyenne pour une image ayant subi une transformation. Dans le cas où la transformation est l'identité, les distances sont égales.
+
+%graphe Octave
+
+Distances des images moyennes à l'image moyenne des 3 translaté horizontalement en fonction de la valeur translation.
 
 
-\chapter{Conclusion: Test globaux}
+On remarque qu'avec la distance euclidienne, un décalage de 2 pixels vers la gauche de l'image suffit à avoir une mauvaise identification, alors que pour la distance tangente, on identifie correctement l'image même après des décalages allant jusqu'à 6 pixels.
+
+
+\subsection{Algorithme}
+On calcule pour chaque chiffre la moyenne des images du jeu d'entraînement (comme dans le premier algorithme) puis on calcule la matrice des dérivées de chaque transformation appliquée à chaque image moyenne. Pour tester une image, on calcule de même la matrice des dérivées pour celle-ci. On l'identifie ensuite au chiffre tel que la distance tangente à l'image moyenne associée soit minimale.
+
+
+
+\subsection{Tests}
+Pour vérifier l'efficacité de l'algorithme, nous avons implémenté les différentes transformations à l'aide des modules python de traitement d'image (scipy et openCV) et généré des jeux de tests où chaque image a subi un nombre de transformations aléatoirement choisies. On a ensuite comparé l'efficacité de cet algorithme avec les deux autres algorithmes.
+
+%Tableau test 3 algos
+
+\chapter{Test globaux}
 
 Pour tester la performance des algorithmes implémentées on a effectué une série de tests sur l'ensemble de la base de donnée: on a réservé 20\% des images de la base de données comme ensemble de test, puis nous avons sélectionné aléatoirement la moitié des images restantes comme ensemble d’entraînement.\\
+Pour évaluer la complexité en temps de calcul, on a exécuté chaque algorithme sur un ensemble de 1000 images avec les résultats suivants: l'algorithme des écarts à la moyenne prend 0.1 secondes, celui de la décomposition en valeurs singulières 37.7 secondes et celui de la distance tangente 1137.9 secondes (environ 20 minutes).
 
-Pour le premier algorithme nous avons testé 50 fois, obtenant en moyenne des performances de 83\% pour la norme 2 et 84\% pour la norme 3 (Table 5.1) avec des résultats variées en fonction des chiffres analysés.
+Pour le premier algorithme nous avons testé 50 fois, obtenant en moyenne des performances (taux d'identification correct) de 83\% pour la norme 2 et 84\% pour la norme 3 (Table 5.1) avec des résultats variées en fonction des chiffres analysés.
 
 \begin{center}
 \captionof{table}{Performance Algorithme 1, pour les normes 2 et 3}
@@ -176,7 +238,7 @@ Pour le premier algorithme nous avons testé 50 fois, obtenant en moyenne des pe
 \end{tabular}
 \end{center}
 
-Le deuxième algorithme étant significativement (DE COMBIEN?) plus coûteux quant au temps de calcul, on a effectuée 30 tests, obtenant une performance moyenne de 96\% (Table 5.2). Les performances sont significativement plus consistantes pour toutes les chiffres par rapport à l'algorithme 1 (minimum 94\%).
+Le deuxième algorithme étant significativement plus coûteux quant au temps de calcul, on a effectuée 30 tests, obtenant une performance moyenne de 96\% (Table 5.2). Les performances sont significativement plus consistantes pour toutes les chiffres par rapport à l'algorithme 1 (minimum 94\%).
 
 \begin{center}
 \captionof{table}{Performance Algorithme 2 avec 20 vecteurs base}
@@ -221,17 +283,10 @@ En ajoutant un seuil de ressemblance minimale, on est capable de mettre de coté
 \end{tabular}
 \end{center}
 
-
-
-\bibliography{Bibliographie}% Utilise exemple.bib
-  
-% Prints all the non-cited references
-\nocite{*} 
-% Use style 'alphakey' or 'alpha' for the draft, and then switch 
-% to 'unsrt' or 'plain' or 'ieeetr' styles for the final version, 
-% since they are the IEEE preferred ones. 
+\chapter{Conclusion}
+En comparant les résultats obtenus avec ceux de l'ouvrage de référence (Elden, 2007) on remarque que l'on a de meilleurs performances avec les deux premiers algorithmes. On peut expliquer cela par le fait la base que nous avons utilisée est environ 7 fois plus grande et que les images traitées ont une résolution plus élevée ($28\times 28$ par rapport à $16\times 16$ pixels dans l'ouvrage de référence).\\
+Pour l'algorithme des distances tangentes, Elden compare les images à tester à chaque image du jeu d'entraînement. Bien que cela donne de bon résultats, pour l'ensemble de données utilisé et les ressources informatiques à notre disposition, cette implémentation est irréalisable. Nous avons donc implémenté la distance tangente comme une amélioration de l'algorithme des écarts à la moyenne.
 \bibliographystyle{ieeetr}
-%\bibliographystyle{alpha}
-%\cleardoublepage
-
+\bibliography{Bibliographie}
+\nocite{*} 
 \end{document}

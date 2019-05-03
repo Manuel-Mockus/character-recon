@@ -8,6 +8,7 @@
 \@writefile{lof}{\select@language{french}}
 \@writefile{lot}{\select@language{french}}
 \citation{Elden:1}
+\citation{Simard:2}
 \@writefile{toc}{\contentsline {chapter}{\numberline {1}Introduction}{3}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
@@ -19,30 +20,42 @@
 \@writefile{lot}{\addvspace {10\p@ }}
 \@writefile{toc}{\contentsline {section}{\numberline {3.1}Th\IeC {\'e}orie}{5}}
 \@writefile{toc}{\contentsline {section}{\numberline {3.2}Pratique}{5}}
-\@writefile{lot}{\contentsline {table}{\numberline {3.1}{\ignorespaces Pourcentage de chiffres correctement identifi\IeC {\'e}es par norme de Minkowsky\relax }}{5}}
+\@writefile{lot}{\contentsline {table}{\numberline {3.1}{\ignorespaces Pourcentage de chiffres correctement identifi\IeC {\'e}es par norme de Minkowsky\relax }}{6}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3.1}{\ignorespaces Performance de l'algorithme pour chaque chiffre et en moyenne en fonction de la norme de Minkowsky (la valeur 0 en abscisse repr\IeC {\'e}sente la norme infinie).\relax }}{6}}
-\@writefile{lot}{\contentsline {table}{\numberline {3.2}{\ignorespaces Chiffres les plus souvent confondus par norme de Minkowsky\relax }}{7}}
+\@writefile{lot}{\contentsline {table}{\numberline {3.2}{\ignorespaces Repr\IeC {\'e}sente pour les normes 1,2 et 3 et pour un chiffre i donn\IeC {\'e} avec quel autre chiffre le chiffre i est le plus souvent confondu par l'algorithme\relax }}{7}}
 \@writefile{toc}{\contentsline {chapter}{\numberline {4}Deuxi\IeC {\`e}me m\IeC {\'e}thode : utilisation de la d\IeC {\'e}composition en valeurs singuli\IeC {\`e}re (SVD)}{8}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.0.1}Th\IeC {\'e}orie}{8}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.0.2}Pratique}{9}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces Moindres carr\IeC {\'e}s de tous les 1 du test (20 vecteurs de base). On remarque une bonne identification des chiffres.\relax }}{9}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces Moindres carr\IeC {\'e}s de tous les 3 du test (20 vecteurs de base). Le graphique montre la difficult\IeC {\'e} de classifier les 3 (relativement par rapport aux 1).\relax }}{10}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.0.3}Param\IeC {\`e}tres}{10}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.3}{\ignorespaces A gauche, pourcentage d'images correctement identifi\IeC {\'e}es et a droite, pourcentage d'images rejet\IeC {\'e}es en fonction de nombre de vecteurs de base et du seuil de distance minimale\relax }}{10}}
-\@writefile{toc}{\contentsline {subsubsection}{Seuil}{11}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.4}{\ignorespaces Pourcentage de vrai positifs et de rejet\IeC {\'e}s en fonction du niveau du seuil.\relax }}{11}}
-\@writefile{toc}{\contentsline {subsubsection}{Nombre de vecteurs de base}{11}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.5}{\ignorespaces Performance pour chaque chiffre et en moyenne en fonction du nombre de vecteurs de base.\relax }}{12}}
-\@writefile{toc}{\contentsline {chapter}{\numberline {5}Conclusion: Test globaux}{13}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces Distance pour chaque image de 1 aux espaces vectoriels (de dimension 20) repr\IeC {\'e}sentant les diff\IeC {\'e}rents chiffres. On remarque que les images sont bien plus proches de l'espace des uns que des autres espaces et il y a donc tr\IeC {\`e}s peu d'erreur.\relax }}{10}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces Distance pour chaque image de 3 aux espaces vectoriels (de dimension 20) repr\IeC {\'e}sentant les diff\IeC {\'e}rents chiffres. On peut remarquer des pics secondaires pour les espaces des 5 et des 8 ce qui signifie que les 3 sont plus difficiles \IeC {\`a} identifier clairement que les 1 et seront g\IeC {\'e}n\IeC {\'e}ralement pris pour des 5 et des 8 par l'algorithme lorsqu'il se trompera.\relax }}{10}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.0.3}Param\IeC {\`e}tres}{11}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.3}{\ignorespaces A gauche, pourcentage d'images correctement identifi\IeC {\'e}es et a droite, pourcentage d'images rejet\IeC {\'e}es en fonction de nombre de vecteurs de base et du seuil de distance minimale\relax }}{11}}
+\@writefile{toc}{\contentsline {subsubsection}{Seuil}{12}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.4}{\ignorespaces Pourcentage de vrai positifs et de rejet\IeC {\'e}s en fonction du niveau du seuil.\relax }}{12}}
+\@writefile{toc}{\contentsline {subsubsection}{Nombre de vecteurs de base}{12}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.5}{\ignorespaces Performance pour chaque chiffre et en moyenne en fonction du nombre de vecteurs de base. A gauche lorsque le nombre de vecteurs de base est encore faible l'algorithme devient plus performant en augmentant ce param\IeC {\`e}tre. A droite on assiste \IeC {\`a} l'effondremment du mod\IeC {\`e}le lorsque le nombre de vecteurs de base est trop \IeC {\'e}lev\IeC {\'e} et que les espaces relatifs \IeC {\`a} chacun des nombres s'intersectent.\relax }}{13}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {5}Distance tangente}{14}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\@writefile{lot}{\contentsline {table}{\numberline {5.1}{\ignorespaces Performance Algorithme 1, pour les normes 2 et 3\relax }}{13}}
-\@writefile{lot}{\contentsline {table}{\numberline {5.2}{\ignorespaces Performance Algorithme 2 avec 20 vecteurs base\relax }}{13}}
-\bibdata{Bibliographie}
-\@writefile{lot}{\contentsline {table}{\numberline {5.3}{\ignorespaces Performance et taux de Rejets Algorithme 2 avec 20 vecteurs base et un seuil de 0.99.\relax }}{14}}
-\@writefile{lot}{\contentsline {table}{\numberline {5.4}{\ignorespaces Performance et taux de Rejets Algorithme 2 avec 20 vecteurs base et un seuil de 0.95.\relax }}{14}}
-\bibcite{Elden:1}{1}
-\citation{*}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.0.1}Th\IeC {\'e}orie}{14}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.0.2}Pratique}{15}}
+\@writefile{toc}{\contentsline {subsubsection}{Translation}{15}}
+\citation{Elden}
+\@writefile{toc}{\contentsline {subsubsection}{Rotation}{16}}
+\@writefile{toc}{\contentsline {subsubsection}{Agrandissement et r\IeC {\'e}tr\IeC {\'e}cissement}{16}}
+\@writefile{toc}{\contentsline {subsubsection}{\IeC {\'E}tirement}{16}}
+\@writefile{toc}{\contentsline {subsubsection}{\IeC {\'E}paississement}{16}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.0.3}Algorithme}{17}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.0.4}Tests}{17}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {6}Test globaux}{18}}
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\@writefile{lot}{\contentsline {table}{\numberline {6.1}{\ignorespaces Performance Algorithme 1, pour les normes 2 et 3\relax }}{18}}
+\@writefile{lot}{\contentsline {table}{\numberline {6.2}{\ignorespaces Performance Algorithme 2 avec 20 vecteurs base\relax }}{18}}
 \bibstyle{ieeetr}
+\bibdata{Bibliographie}
+\citation{*}
+\@writefile{lot}{\contentsline {table}{\numberline {6.3}{\ignorespaces Performance et taux de rejet de l'Algorithme 2 avec 20 vecteurs base et un seuil de 0.99, pour les chiffres de 0 \IeC {\`a} 9 et en moyenne.\relax }}{19}}
+\@writefile{lot}{\contentsline {table}{\numberline {6.4}{\ignorespaces Performance et taux de rejet de l'Algorithme 2 avec 20 vecteurs base et un seuil de 0.95, pour les chiffres de 0 \IeC {\`a} 9 et en moyenne.\relax }}{19}}
