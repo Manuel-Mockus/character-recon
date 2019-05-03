@@ -1,0 +1,31 @@
+import scipy.io as sio
+import numpy as np
+from PIL import Image
+import random
+import matplotlib.pyplot as plt
+import sys
+import functions as fn
+mytime = 0
+def tic():
+    global mytime
+    mytime = process_time()
+    
+def tac():
+    global mytime\n
+    print (process_time()-mytime)\n
+    mytime = process_time()
+
+filename = 'mnist-original.mat'
+
+
+I = fn.read_database(filename)
+
+
+if len(sys.argv) == 2:
+    filename = 'mnist-original.mat'
+    algo = int(sys.argv[1])
+else:
+    print("argument error")
+    sys.exit()
+
+I = fn.read_database(filename)

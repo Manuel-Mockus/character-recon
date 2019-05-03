@@ -68,7 +68,24 @@ elif algo == 2 :
     print("Rejected rate (each digit and mean):")
     print(R_total)
 
+elif algo == 3 :
 
+    """
+    Test sur toute la base avec 10 sets de training tirés aléatoirement
+    """
+    P_total = [0]*11
+    transfo = [fn.diff_x,fn.diff_y,fn.diff_rotate,fn.diff_scaling,fn.diff_PHT,fn.diff_DHT,fn.diff_thickening]
+    for k in range(10) :
+        print("Test",k+1,":")
+        Training,Test = fn.Separation(I)
+        Centroids = fn.centroids(Training)
+        print("processing")
+        P = fn.TTT2(Centroids,Test,transfo)
+        for i in range(11) :
+            P_total[i]+=P[i]
+    P_total = [x/10 for x in P_total]
+    print("Success rate (each digits and mean):")
+    print(P_total)
     
 
 

@@ -603,7 +603,7 @@ def find_min2(p,Te,e,funcs):
     print(x)
     print(np.linalg.norm(A*x - b))
     print(np.linalg.norm(A*np.matrix([[1],[1]]) - b))
-    prinhttp://www.np.hstack/t(A)
+    print(A)
 
     print(np.linalg.norm(A*x - b))
     """
@@ -645,9 +645,11 @@ def TTT2(Centroids,Test,funcs):
         Te.append(TT)
     for i in range(10):
         print("chiffre ",i)
+        print("nombre d'images testées pour ce chiffre : ",len(Test[i]))
         for j in range(len(Test[i])):
             x = [0]*10
             for k in range(10):
+        
                 x[k]= find_min2(Test[i][j],Te[k],Centroids[k],funcs)
             T = np.argmin(x)
             #print(T,i)
