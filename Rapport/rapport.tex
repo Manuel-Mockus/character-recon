@@ -17,10 +17,11 @@
 \tableofcontents
 \chapter{Introduction}
 Le cœur du projet est d'écrire un code permettant de reconnaître automatiquement des caractères manuscrits, le but étant de se familiariser avec des méthodes usuelles de reconnaissance de forme en les implémentant pour un cas particulier et en en comprenant la théorie. 
-Nous utiliserons comme référence le travail de Lars Elden "Matrix Methods in Data Mining and Pattern Recognition  \cite{Elden:1}" \cite{Simard:2}. \\
+Nous utiliserons comme référence le travail de Lars Elden "Matrix Methods in Data Mining and Pattern Recognition  \cite{Elden}. \\
 
 Les caractères à analyser seront ici des chiffres de 1 à 9 sous forme de vecteurs de taille $(28\times28,1)$ à valeurs entières comprise entre 0 et 255 : chaque vecteur représente une image de taille $28\times28$ en nuance de gris (0 = noir, blanc = 255). Nous disposons d'une base de données de 70000 chiffres manuscrits labellisés stockés sous le format décrit précédemment.\\
- 
+
+
 Nous avons choisi comme langage de programmation pour notre projet le Python.
 
 \chapter{Pré-traitement des données}
@@ -38,6 +39,11 @@ La première méthode étudiée est une approche assez intuitive du problème.
 Dans un premier temps, à partir du jeu de données destiné à l'entraînement, pour chaque chiffre on crée une image moyenne de toutes les image du chiffre : le centre de gravité (centre de masse, isobarycentre) de tous les vecteurs de ce chiffre.\\Une image inconnue est alors classée en cherchant l'image moyenne telle que l'écart de ressemblance entre l'image à tester et cette image soit minimum.\\
 
 On définit l'écart de ressemblance entre deux images comme étant la distance dans une certaine norme choisie entre les deux vecteurs $x$ et $y$ de $\textbf{R}^{784}$ correspondant aux images : $$d(x,y) = \norm{x-y}$$ Le choix de la norme et son influence sur les résultat est détaillé dans la partie pratique.
+
+\begin{figure}[H]
+  	\includegraphics[width=\linewidth]{Graphs/CentroidsVerticale.png}
+  	\caption{Images moyennes de chaque chiffre}
+\end{figure}
 
 \section{Pratique}
 Pour analyser l'efficacité de notre programme nous avons choisi d'observer deux types de données, le taux de réussite global de notre programme pour différentes normes, et le taux de réussite de notre programme pour chaque chiffre avec une norme fixe.
@@ -65,7 +71,7 @@ Nous avons comparé les taux de réussite de l'algorithme -pour chaque chiffre e
   	\caption{Performance de l'algorithme pour chaque chiffre et en moyenne en fonction de la norme de Minkowsky (la valeur 0 en abscisse représente la norme infinie).}
 \end{figure}
 
-On remarque qu'en moyenne les normes 2 et 3 sont les plus performantes et aussi celles pour lequelles les résultats obtenus pour les différents chiffres sont les plus proches. \\
+On remarque qu'en moyenne les normes 2 et 3 sont les plus performantes et aussi celles pour lesquelles les résultats obtenus pour les différents chiffres sont les plus proches. \\
 La distance associée à la norme infinie ne prenant en compte que l'écart maximal composante par composante entre deux vecteurs, appliquée à la comparaison d'image elle est inefficace car l'écart maximal n'est pas représentatif de l'ensemble de l'image. De plus, quand k augmente, le comportement de la norme k de Minkowski tend vers celui de la norme infinie, ce qui se vérifie dans les résultats obtenus.\\ 
 Pour la norme 1, on observe de mauvais résultats moyens avec beaucoup de disparités entre les différents chiffres(Figure 3.1). On a donc cherché à savoir lorsqu'un chiffre est mal reconnu avec quel chiffre il a été le plus confondu (Table 3.2).\\
 On remarque pour la norme 1 que les 1 sont toujours correctement identifiés, mais que les autres chiffres sont souvent confondus avec des 1.
@@ -87,12 +93,12 @@ On remarque pour la norme 1 que les 1 sont toujours correctement identifiés, ma
 \end{center}
 
 
-\chapter{Deuxième méthode : utilisation de la décomposition en valeurs singulière (SVD)}
+\chapter{Deuxième méthode : utilisation de la décomposition en valeurs singulière}
 \subsection{Théorie}
-Etant donné les résultats décevants de notre première méthode, il est nécessaire d'utiliser une autre technique qui prenne en compte les variations entre les différentes images représentant un même chiffre, cette technique repose sur un outil mathématique très puissant: la décomposition en valeurs singulières (SVD).\\
-Il s'agit ici dans un premier temps, de créer pour chaque chiffre (on parlera ici uniquement des trois pour alléger l'écriture) une matrice A de 784 lignes, comportant autant de colonnes que le nombre de 3 dont on dispose dans notre base d'entrainement. Chaque colonne de cette matrice représente une image de 3. On dispose alors d'un sous espace vectoriel de $\textbf{R}^{784}$ , engendré par les colonnes de A (on appelera cet espace vectoriel "l'espace des trois"), qui est nécessairement de faible dimension, sinon les espaces propres à chaque chiffre s'intersecteraient. Or le théorème de décomposition en valeurs singulières, nous permet de décomposer cette matrice ainsi: $$A = \sum_{i=1}^{784}{\sigma_{i}u_{i}v_{i}^{T}}$$\\
+Étant donné les résultats décevants de notre première méthode, il est nécessaire d'utiliser une autre technique qui prenne en compte les variations entre les différentes images représentant un même chiffre, cette technique repose sur un outil mathématique très puissant: la décomposition en valeurs singulières (SVD par ses initiales en anglais \textit{Singular Value Decomposition}).\\
+Il s'agit ici dans un premier temps, de créer pour chaque chiffre (on parlera ici uniquement des trois pour alléger l'écriture) une matrice A de 784 lignes, comportant autant de colonnes que le nombre de 3 dont on dispose dans notre base d’entraînement. Chaque colonne de cette matrice représente une image de 3. On dispose alors d'un sous espace vectoriel de $\textbf{R}^{784}$ , engendré par les colonnes de A (on appellera cet espace vectoriel "l'espace des trois"), qui est nécessairement de faible dimension, sinon les espaces propres à chaque chiffre s'intersecteraient. Or le théorème de décomposition en valeurs singulières, nous permet de décomposer cette matrice ainsi: $$A = \sum_{i=1}^{784}{\sigma_{i}u_{i}v_{i}^{T}}$$\\
 Les $u_{i}$ sont alors une base orthonormée de l'espace des trois. De plus lors d'une SVD, la base est ordonnée de manières à ce que les $\sigma_{i}$ forment une suite décroissante, qui dans notre cas finit par s'annuler. Les premiers vecteurs u de la SVD sont alors représentatifs de l'espace vectoriel des 3, étant donné que toutes les matrices de la somme sont de norme 1. On peut donc construire un espace des trois réduit ayant pour base (orthonormée) les premiers vecteurs u de la SVD. Ce sous-espace est de faible dimension par rapport à l'espace de dimension 784 dans le quel il vit et il est donc très peu probable qu'il intersecte le sous-espace relatif à un autre chiffre, ce qui garantit que les différents espaces réduits seront bien distincts dans le calcul à venir.\\
-Maintenant qu'on dispose d'un espace vectoriel des 3 réduit (doté d'une base orthonormé), on peut facilement calculer la distance, pour la norme deux, du chiffre non identifié (c'est à dire un vecteur de  $\textbf{R}^{784}$) à cet espace (cela revient à un calcul des moindres carrés). Si on effectue ce calcul pour l'espace correspondant à chaque chiffre on peut alors labéliser l'image, en constatant de quel espace vectoriel elle est le plus proche.
+Maintenant qu'on dispose d'un espace vectoriel des 3 réduit (doté d'une base orthonormé), on peut facilement calculer la distance, pour la norme deux, du chiffre non identifié (c'est à dire un vecteur de  $\textbf{R}^{784}$) à cet espace (cela revient à un calcul des moindres carrés). Si on effectue ce calcul pour l'espace correspondant à chaque chiffre on peut alors labelliser l'image, en constatant de quel espace vectoriel elle est le plus proche.
 
 \subsection{Pratique}
 
@@ -151,9 +157,11 @@ En faisant varier k entre 1 et 30, on remarque que l'efficacité de l'algorithme
 \chapter{Distance tangente}
 \subsection{Théorie}
 On souhaite désormais affranchir notre algorithme des erreurs liées aux petites variations usuelles que nos chiffres peuvent connaître lorsque qu'un humain les écrits. En effet il est courant dans une base de données réelle que les chiffres soient légèrement décalés, dilatés ou encore épaissis. Afin d'expliciter la méthode plus simplement, on va d'abord s’intéresser uniquement à rendre notre algorithme insensible à la translation en X. \\
-Si on considère une image I comme un point dans $\textbf{R}^{784}$, l'ensemble des I translatés est une courbe continue dans $\textbf{R}^{784}$. On peut décrire l'ensemble des points de cette courbe, comme l'image de $\textbf{R}$ par la fonction f(x) = s(I,x), où s(I,$\alpha$) est l'élément de  $\textbf{R}^{784}$ correspondant à I décalé de $\alpha$ sur l'axe des X. P étant un autre élément de $\textbf{R}^{784}$, on cherche alors à établir la distance minimale entre un translaté de I et de P. Idéalement on aimerai donc définir la distance suivante, : $d(I,P)= min_{\alpha,\beta \in \textbf{R}} (||s(I,\alpha)-s(P,\beta)||)$. Cependant il serait inutile d'essayer d'implémenter cette distance, puisque son calcul est très complexe et qu'on ne s’intéresse ici qu'à de petites translations. On va donc utiliser des approximations à l'ordre 1 des courbes des translatés, valables pour des petites valeurs de $\alpha et \beta$. On effectue un développement de Taylor et on obtient:$$s(I,\alpha)\approx s(I,0) + \frac{ds}{d\alpha}(I,0)*\alpha=I + \frac{ds}{d\alpha}(I,0)*\alpha$$.\\
-Ainsi on peut définir une nouvelle distance plus simple, à peu près équivalente au voisinage de 0: $d_{2}(I,P)= min_{\alpha,\beta \in \textbf{R}} (||I+\frac{ds}{d\alpha}(I,0)*\alpha-P+\frac{ds}{d\beta}(P,0)*\beta)||)$. Or $\frac{ds}{d\alpha}(I,0)$ est indépendant de $\alpha$, on peut donc le noter $t_{I}$ et ainsi réécrire notre distance ainsi: $d_{2}(I,P)= min_{\alpha,\beta \in \textbf{R}} (||(I-P)-\begin{pmatrix}-t_{I} & t_{P}\end{pmatrix} \begin{pmatrix}\alpha \\ \beta\end{pmatrix} ||)$. 
- A condition que la norme utilisée soit la norme euclidienne, le calcul de cette distance est un problème des moindres carrés. On le résout grâce au théorème suivant : soit $A$ une matrice de rang plein de décomposition en valeurs singulières $A = U\Sigma V^T$, le problème des moindres carrés $min_x\norm{Ax-b}_2$ a pour unique solution $$x = V\Sigma^{-1}U_1^Tb$$ Ici $A = \begin{pmatrix}-T_{I} & T_{P}\end{pmatrix}$ et $b = (I-P)$.\\
+Si on considère une image I comme un point dans $\textbf{R}^{784}$, l'ensemble des I translatés est une courbe continue dans $\textbf{R}^{784}$. On peut décrire l'ensemble des points de cette courbe, comme l'image de $\textbf{R}$ par la fonction f(x) = s(I,x), où s(I,$\alpha$) est l'élément de  $\textbf{R}^{784}$ correspondant à I décalé de $\alpha$ sur l'axe des X. P étant un autre élément de $\textbf{R}^{784}$, on cherche alors à établir la distance minimale entre un translaté de I et de P. Idéalement on aimerai donc définir la distance suivante, : $$d(I,P)= min_{\alpha,\beta \in \textbf{R}} ||s(I,\alpha)-s(P,\beta)||$$. 
+Cependant il serait inutile d'essayer d'implémenter cette distance, puisque son calcul est très complexe et qu'on ne s’intéresse ici qu'à de petites translations. On va donc utiliser des approximations à l'ordre 1 des courbes des translatés, valables pour des petites valeurs de $\alpha$ et $\beta$. On effectue un développement de Taylor et on obtient:$$s(I,\alpha)\approx s(I,0) + \frac{ds}{d\alpha}(I,0)*\alpha=I + \frac{ds}{d\alpha}(I,0)*\alpha$$.
+Ainsi on peut définir une nouvelle distance plus simple, à peu près équivalente au voisinage de 0: $$d_{2}(I,P)= min_{\alpha,\beta \in \textbf{R}} ||I+\frac{ds}{d\alpha}(I,0)*\alpha-P+\frac{ds}{d\beta}(P,0)*\beta)||$$
+Or $\frac{ds}{d\alpha}(I,0)$ est indépendant de $\alpha$, on peut donc le noter $T_{I}$ et ainsi réécrire notre distance ainsi: $$d_{2}(I,P)= min_{\alpha,\beta \in \textbf{R}} ||(I-P)-\begin{pmatrix}-T_{I} & T_{P}\end{pmatrix} \begin{pmatrix}\alpha \\ \beta\end{pmatrix} ||$$ 
+A condition que la norme utilisée soit la norme euclidienne, le calcul de cette distance est un problème des moindres carrés. On le résout grâce au théorème suivant : soit $A$ une matrice de rang plein de décomposition en valeurs singulières $A = U\Sigma V^T$, le problème des moindres carrés $min_x\norm{Ax-b}_2$ a pour unique solution $$x = V\Sigma^{-1}U_1^Tb$$ Ici $A = \begin{pmatrix}-T_{I} & T_{P}\end{pmatrix}$ et $b = (I-P)$.\\
  \\
 Généralisons maintenant cette méthode au cas où l'image I peut avoir subit n transformations continues distinctes. L'espace affine des éléments correspondant aux I transformés, noté $C_{I}$ est alors de dimension n, car il est engendré par n courbes de dimension 1 (on peut à partir de I se déplacer dans $\textbf{R}^{784}$ suivant n courbes pour obtenir un I transformé, on voit bien qu'on peut décrire cet espace avec n paramètres). Soit P un autre élément de $\textbf{R}^{784}$ on souhaiterait comme précédemment pouvoir calculer la distance minimale entre $C_{I}$ et $C_{P}$ mais c'est impossible. On utilise donc à nouveau l'hypothèse que les transformations sont de petite ampleur, et on va approximer $C_{I}$ et $C_{P}$ par leur plans tangents en 0. Soit $\alpha$ dans $\textbf{R}^{n}$,on définit s la fonction tel que s(I,$\alpha$) soit l'élément de $\textbf{R}^{784}$ correspondant à I ayant subit pour tout i inférieur à n, la i-ème transformation avec un coefficient $\alpha_{i}$. $C_{I}$ est alors l'image par f(x)=s(I,x) de $\textbf{R}^{n}$, un développement de Taylor à l'ordre 1 permet alors d'expliciter le plan tangent à $C_{I}$ en I.
 
@@ -199,10 +207,10 @@ Pour l'épaississement on considérera seulement la dérivée \cite{Elden} : $$(
 \subsubsection{Distance euclidienne versus distance tangente}
 Cet algorithme différant de celui des écarts à la moyenne uniquement par la distance utilisée, on compare ces deux distances à chaque moyenne pour une image ayant subi une transformation. Dans le cas où la transformation est l'identité, les distances sont égales.
 
-%graphe Octave
-
-Distances des images moyennes à l'image moyenne des 3 translaté horizontalement en fonction de la valeur translation.
-
+\begin{figure}[H]
+  	\includegraphics[width=\linewidth]{"Graphs/GraphesOct".png}
+  	\caption{Distances des images moyennes à l'image moyenne des 3 translaté horizontalement en fonction de la valeur translation.}
+\end{figure}
 
 On remarque qu'avec la distance euclidienne, un décalage de 2 pixels vers la gauche de l'image suffit à avoir une mauvaise identification, alors que pour la distance tangente, on identifie correctement l'image même après des décalages allant jusqu'à 6 pixels.
 
@@ -222,6 +230,7 @@ Pour vérifier l'efficacité de l'algorithme, nous avons implémenté les diffé
 Pour tester la performance des algorithmes implémentées on a effectué une série de tests sur l'ensemble de la base de donnée: on a réservé 20\% des images de la base de données comme ensemble de test, puis nous avons sélectionné aléatoirement la moitié des images restantes comme ensemble d’entraînement.\\
 Pour évaluer la complexité en temps de calcul, on a exécuté chaque algorithme sur un ensemble de 1000 images avec les résultats suivants: l'algorithme des écarts à la moyenne prend 0.1 secondes, celui de la décomposition en valeurs singulières 37.7 secondes et celui de la distance tangente 1137.9 secondes (environ 20 minutes).
 
+\subsection{Écarts a la moyenne}
 Pour le premier algorithme nous avons testé 50 fois, obtenant en moyenne des performances (taux d'identification correct) de 83\% pour la norme 2 et 84\% pour la norme 3 (Table 5.1) avec des résultats variées en fonction des chiffres analysés.
 
 \begin{center}
@@ -238,7 +247,8 @@ Pour le premier algorithme nous avons testé 50 fois, obtenant en moyenne des pe
 \end{tabular}
 \end{center}
 
-Le deuxième algorithme étant significativement plus coûteux quant au temps de calcul, on a effectuée 30 tests, obtenant une performance moyenne de 96\% (Table 5.2). Les performances sont significativement plus consistantes pour toutes les chiffres par rapport à l'algorithme 1 (minimum 94\%).
+\subsection{Décomposition en valeurs singuliers}
+L'algorithme de décomposition en valeurs singuliers étant significativement plus coûteux quant au temps de calcul, on a effectuée 30 tests, obtenant une performance moyenne de 96\% avec un minimum de 94\% (Table 5.2). Les performances sont significativement plus consistantes pour toutes les chiffres par rapport à l'algorithme d'écarts a la moyenne.
 
 \begin{center}
 \captionof{table}{Performance Algorithme 2 avec 20 vecteurs base}
@@ -283,10 +293,29 @@ En ajoutant un seuil de ressemblance minimale, on est capable de mettre de coté
 \end{tabular}
 \end{center}
 
+\subsection{Distance tangente}
+L’algorithme de distance tangente étant très coûteux en temps de calcul (environ 40 fois plus lent que le deuxième en 10000 fois plus lent que le premier),on a effectuée 10 test sur la base de données obtenant une performance moyenne de 89.6\% (Table 6.5).\\
+Cette performance si bien est plus élevée que celle du premier algorithme, reste très inférieure a celle de l'algorithme SVD. 
+%Ajouter une phrase disant que l'utilisation dans la vraie vie est impraticable (je n'ai pas d'imagination en ce moment ci)
+
+\begin{center}
+\captionof{table}{Performance algorithme distance tangente pour les chiffres de 0 à 9 et moyenne.}
+\begin{tabular}{ |c||c|c|c|c|c|c|c|c|c|c|c| } 
+ \hline
+   & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & \textbf{Total} \\ 
+  \hline
+  \hline
+ Performance & 94.9 & 99.6 & 79.2 & 92.5 & 90.3 & 83.6 & 94.5 & 90.9 & 80.7 & 88.0 &  \textbf{89.6} \\
+
+ \hline
+\end{tabular}
+\end{center}
+
 \chapter{Conclusion}
 En comparant les résultats obtenus avec ceux de l'ouvrage de référence (Elden, 2007) on remarque que l'on a de meilleurs performances avec les deux premiers algorithmes. On peut expliquer cela par le fait la base que nous avons utilisée est environ 7 fois plus grande et que les images traitées ont une résolution plus élevée ($28\times 28$ par rapport à $16\times 16$ pixels dans l'ouvrage de référence).\\
 Pour l'algorithme des distances tangentes, Elden compare les images à tester à chaque image du jeu d'entraînement. Bien que cela donne de bon résultats, pour l'ensemble de données utilisé et les ressources informatiques à notre disposition, cette implémentation est irréalisable. Nous avons donc implémenté la distance tangente comme une amélioration de l'algorithme des écarts à la moyenne.
+
 \bibliographystyle{ieeetr}
 \bibliography{Bibliographie}
-\nocite{*} 
+%\nocite{*} 
 \end{document}

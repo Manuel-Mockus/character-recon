@@ -1,0 +1,13 @@
+\begin{thebibliography}{1}
+
+\bibitem{Elden}
+L.~Elden, ``Matrix methods in data mining and pattern recognition,'' {\em SIAM
+  Fundamentals of Algorithms}, 2007.
+
+\bibitem{Simard}
+P.~S. \and Yann Le Cun \and John Denker~\and Bernard~Victorri, ``Transformation
+  invariance in pattern recognition - tangent distance and tangent
+  propagation,'' in {\em Neural Networks: Tricks on the Trade}, pp.~239--274,
+  Springer-Verlag, 1524~ed., 1998.
+
+\end{thebibliography}
