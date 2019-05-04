@@ -463,6 +463,7 @@ def randomize_database(Data,n_x,n_a,n_s,nb_transformations):
     R_x = range(-n_x,n_x+1)
     R_a = np.linspace(-n_a,n_a,10)
     R_s = np.linspace(1-n_s,1+n_s,10)
+    R_d = np.linspace(-n_s,n_s,10)
     I = [[]for i in range(10)]
     for i in range(len(Data)):
         print("randomizing #",i) 
@@ -470,9 +471,11 @@ def randomize_database(Data,n_x,n_a,n_s,nb_transformations):
             transfo = Data[i][j]
             for n in range(nb_transformations):
                 choice = random.choice(range(7))
+                
                 if choice == 0:  #Translation en X
                     x = random.choice(R_x)
                     transfo = Translation(transfo,x,axis = 0)
+                    
                 elif choice == 1:#translation en y
                     x = random.choice(R_x)
                     transfo = Translation(transfo,x,axis = 1)
@@ -494,8 +497,8 @@ def randomize_database(Data,n_x,n_a,n_s,nb_transformations):
                     transfo = PHT(transfo,s,axis = 1)
                     
                 elif choice == 6:
-                    s = random.choice(R_s)
-                    transfo = DHT(transfo,s)
+                    d = random.choice(R_d)
+                    transfo = DHT(transfo,d)
                     
             I[i].append(transfo)
     return I
@@ -604,8 +607,14 @@ def TTT2(Centroids,Test,funcs):
         for j in range(len(Test[i])):
             x = [0]*10
             for k in range(10):
-        
-                x[k]= find_min2(Test[i][j],Te[k],Centroids[k],funcs)
+                try:
+                    x[k]= find_min2(Test[i][j],Te[k],Centroids[k],funcs)
+                except:
+                    print("erreur :")
+                    Afficher(Test[i][j])
+                    print(Test[i][j])
+                    print(Te[k])
+                    Afficher(Centroids[k])
             T = np.argmin(x)
             #print(T,i)
             if T == i:
