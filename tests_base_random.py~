@@ -1,0 +1,21 @@
+import scipy.io as sio
+import numpy as np
+import random
+import matplotlib.pyplot as plt
+import sys
+import functions as fn
+
+filename = 'mnist-original.mat'
+I = fn.read_database(filename)
+
+Training,Test = fn.Separation(I)
+
+#Creation de 3 sets de tests ayant subit des transformations aléatoires (respectivement 1,2 et 3)
+Test1 = fn.randomize_database(Test,3,np.pi/6,0.2,1)
+Test2 = fn.randomize_database(Test,3,np.pi/6,0.2,2)
+Test3 = fn.randomize_database(Test,3,np.pi/6,0.2,3)
+
+transfo = [fn.diff_x,fn.diff_y,fn.diff_rotate,fn.diff_scaling,fn.diff_PHT,fn.diff_DHT,fn.diff_thickening]
+
+Centroids = fn.centroids(Training)
+

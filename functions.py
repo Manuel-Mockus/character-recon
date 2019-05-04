@@ -563,31 +563,11 @@ def diff_DHT(img):
     return D_scaling.reshape(784)
 
 
-def find_min(p,Te,e,func):
-    Tp = func(p)
-    Tp = np.matrix(Tp).transpose()
-    A = np.hstack([-Tp,Te])
-    U,S1,V = np.linalg.svd(A)
-    b = np.transpose([p-e])
-    S = np.matrix(np.diag(S1))
-    """
-    print("V",V.shape)
-    print("U",U.shape)
-    print("S",S.shape)
-    """
-    x = V.transpose()*np.linalg.solve(S,U[:,:2].transpose()*b)
-    """
-    print(x)
-    print(np.linalg.norm(A*x - b))
-    print(np.linalg.norm(A*np.matrix([[1],[1]]) - b))
-    print(A)
-
-    print(np.linalg.norm(A*x - b))
-    """
-
-    return np.linalg.norm(A*x - b)
 
 def find_min2(p,Te,e,funcs):
+    """
+    Calcul des moindres carrés pour l'algorithme 3
+    """
     A = Te
     l = len(funcs)
     for k in range(l) :
@@ -599,41 +579,16 @@ def find_min2(p,Te,e,funcs):
     S = np.matrix(np.diag(S1))
 
     x = V.transpose()*np.linalg.solve(S,U[:,:2*l].transpose()*b)
-    """
-    print(x)
-    print(np.linalg.norm(A*x - b))
-    print(np.linalg.norm(A*np.matrix([[1],[1]]) - b))
-    print(A)
-
-    print(np.linalg.norm(A*x - b))
-    """
 
     return np.linalg.norm(A*x - b)
 
-def TTT(Centroids,Test,func):
-    Te = []
-    P = [0]*10 # pourcentage vrai positifs
-    for i in range(10):
-        T = np.matrix(func(Centroids[i]))
-        T = T.transpose()
-        Te.append(T)
-    for i in range(10):
-        print("chiffre ",i)
-        for j in range(len(Test[i])):
-            x = [0]*10
-            for k in range(10):
-                x[k]= find_min(Test[i][j],Te[k],Centroids[k],func)
-            T = np.argmin(x)
-            #print(T,i)
-            if T == i:
-                P[i] += 1
-
-    P.append(sum(P)/sum([len(Test[i]) for i in range(10)]))
-    for i in range(10) :
-        P[i] /= len(Test[i])
-    return P
 
 def TTT2(Centroids,Test,funcs):
+    """
+    Effectue un Test pour chaque image de l'ensemble 'Test' et verifie le resultat
+    funcs est le tableau des transformations utilisées par l'algorithme pour l'identifiaction
+    Retourne une liste avec les pourcentages d'identification correcte pour chaque chiffre et pour l'ensemble entier
+    """
     Te = []
     P = [0]*10 # pourcentage vrai positifs
     for i in range(10):
@@ -660,3 +615,41 @@ def TTT2(Centroids,Test,funcs):
     for i in range(10) :
         P[i] /= len(Test[i])
     return P
+
+
+
+#premières fonctions codées pour l'agorithme 3 pour une seule transformation
+"""
+def find_min(p,Te,e,func):
+    Tp = func(p)
+    Tp = np.matrix(Tp).transpose()
+    A = np.hstack([-Tp,Te])
+    U,S1,V = np.linalg.svd(A)
+    b = np.transpose([p-e])
+    S = np.matrix(np.diag(S1))
+    x = V.transpose()*np.linalg.solve(S,U[:,:2].transpose()*b)
+    return np.linalg.norm(A*x - b)
+
+def TTT(Centroids,Test,func):
+    Te = []
+    P = [0]*10 # pourcentage vrai positifs
+    for i in range(10):
+        T = np.matrix(func(Centroids[i]))
+        T = T.transpose()
+        Te.append(T)
+    for i in range(10):
+        print("chiffre ",i)
+        for j in range(len(Test[i])):
+            x = [0]*10
+            for k in range(10):
+                x[k]= find_min(Test[i][j],Te[k],Centroids[k],func)
+            T = np.argmin(x)
+            #print(T,i)
+            if T == i:
+                P[i] += 1
+
+    P.append(sum(P)/sum([len(Test[i]) for i in range(10)]))
+    for i in range(10) :
+        P[i] /= len(Test[i])
+    return P
+"""

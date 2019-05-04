@@ -1,6 +1,5 @@
 import scipy.io as sio
 import numpy as np
-from PIL import Image
 import random
 import matplotlib.pyplot as plt
 import sys
