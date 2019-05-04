@@ -1,0 +1,37 @@
+Comparaison des algorithmes pour une base ayant subi 1 transformation:
+Algorithme 1:
+([0.6357711803041275, 0.8781725888324873, 0.5658082975679543, 0.5780265920223933, 0.6659340659340659, 0.5684877276326208, 0.6242732558139535, 0.6497601096641535, 0.5091575091575091, 0.5136494252873564, 0.6228934590117109], [[5, 0.3399602385685885], [7, 0.4114583333333333], [1, 0.2487644151565074], [5, 0.2835820895522388], [1, 0.4298245614035088], [1, 0.3137614678899083], [1, 0.26499032882011603], [1, 0.5596868884540117], [1, 0.2880597014925373], [4, 0.28360413589364847], ['N/A', 0.0]])
+Algorithme 2:
+processing digit 0
+processing digit 1
+processing digit 2
+processing digit 3
+processing digit 4
+processing digit 5
+processing digit 6
+processing digit 7
+processing digit 8
+processing digit 9
+[0.9837837837837838, 0.9440944881889763, 0.943050193050193, 0.9506903353057199, 0.9729206963249516, 0.9564245810055866, 0.9675262655205349, 0.9452054794520548, 0.9227421109902068, 0.9259634888438134, 0.9516625024024601]
+Algorthme 3:
+chiffre  0
+nombre d'images testees pour ce chiffre :  1381
+chiffre  1
+nombre d'images testees pour ce chiffre :  1576
+chiffre  2
+nombre d'images testees pour ce chiffre :  1398
+chiffre  3
+nombre d'images testees pour ce chiffre :  1429
+chiffre  4
+nombre d'images testees pour ce chiffre :  1365
+chiffre  5
+nombre d'images testees pour ce chiffre :  1263
+chiffre  6
+nombre d'images testees pour ce chiffre :  1376
+chiffre  7
+nombre d'images testees pour ce chiffre :  1459
+chiffre  8
+nombre d'images testees pour ce chiffre :  1365
+chiffre  9
+nombre d'images testees pour ce chiffre :  1392
+[0.7559739319333816, 0.9010152284263959, 0.628755364806867, 0.7305808257522743, 0.7589743589743589, 0.7260490894695171, 0.7318313953488372, 0.7224126113776559, 0.5897435897435898, 0.6436781609195402, 0.7213653241930877]
