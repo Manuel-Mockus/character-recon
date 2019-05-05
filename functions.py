@@ -51,7 +51,13 @@ def Afficher(vect):
     V = vect.reshape((28,28))
     plt.imshow(V, cmap = 'gray')
     plt.axis('off')
-    plt.plot() # ne bloque pas la fenetre comme plt.show
+    plt.plot()
+    plt.show()
+
+def AfficherBord(vect):
+    V = vect.reshape((28,28))
+    plt.imshow(V, cmap = 'gray')
+    plt.plot()
     plt.show()
 
 

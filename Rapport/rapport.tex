@@ -222,9 +222,56 @@ On calcule pour chaque chiffre la moyenne des images du jeu d'entraînement (com
 
 
 \subsection{Tests}
-Pour vérifier l'efficacité de l'algorithme, nous avons implémenté les différentes transformations à l'aide des modules python de traitement d'image (scipy et openCV) et généré des jeux de tests où chaque image a subi un nombre de transformations aléatoirement choisies. On a ensuite comparé l'efficacité de cet algorithme avec les deux autres algorithmes.
+Pour vérifier l'efficacité de l'algorithme, nous avons implémenté les différentes transformations à l'aide des modules python de traitement d'image (scipy et openCV) et généré des jeux de tests où chaque image a subi un nombre de transformations aléatoirement choisies. On a ensuite comparé l'efficacité de cet algorithme avec les deux autres algorithmes.\\
+Nous avons crée trois bases de test, avec différentes niveaux de "bruit": chaque image subit une, deux ou trois transformations choisies aléatoirement.
 
 %Tableau test 3 algos
+\begin{center}
+
+\captionof{table}{Performance des trois algorithmes sur une base ayant subi une transformation}
+\begin{tabular}{ |c||c|c|c|c|c|c|c|c|c|c|c| } 
+\hline
+ Algorithme & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & \textbf{Total} \\ 
+  \hline
+  \hline
+  1 & 72.0 & 85.3 & 65.4 & 62.6 & 74.7 & 59.7 & 75.O & 73.9 & 57.1 & 61.4 & \textbf{69.0} \\
+ \hline
+  2 & 97.3 & 94.4 & 94.0 & 94.8 & 96.9 & 94.7 & 95.1 & 95.0 & 91.3 & 91.6 & \textbf{94.6} \\
+  \hline
+  3 & 84.8 & 92.5 & 73.2 & 78.4 & 86.4 & 75.9 & 86.0 & 83.7 & 66.7 & 72.9 & \textbf{80.3} \\
+ \hline
+\end{tabular}
+
+\captionof{table}{Performance des trois algorithmes sur une base ayant subi deux transformations}
+\begin{tabular}{ |c||c|c|c|c|c|c|c|c|c|c|c| } 
+\hline
+ Algorithme & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & \textbf{Total} \\ 
+  \hline
+  \hline
+  1 & 58.9 & 72.8 & 57.4 & 51.8 & 67.5 & 53.1 & 61.2 & 64.7 & 46.0 & 46.3 & \textbf{58.2} \\
+ \hline
+  2 & 94.0 & 87.5 & 91.2 & 91.2 & 93.3 & 93.6 & 92.3 & 91.9 & 88.8 & 85.3 & \textbf{90.9} \\
+  \hline
+  3 & 73.4 & 82.4 & 67.5 & 69.1 & 79.9 & 71.7 & 73.9 & 75.2 & 57.4 & 62.1 & \textbf{71.4} \\
+ \hline
+\end{tabular}
+
+\captionof{table}{Performance des trois algorithmes sur une base ayant subi trois transformations}
+\begin{tabular}{ |c||c|c|c|c|c|c|c|c|c|c|c| } 
+\hline
+ Algorithme & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & \textbf{Total} \\ 
+  \hline
+  \hline
+ 1 & 47.0 & 66.9 & 50.7 & 41.3 & 61.2 & 47.6 & 50.7 & 54.2 & 37.4 & 35.3 & \textbf{49.5} \\
+ \hline
+ 2 & 92.9 & 82.4 & 90.3 & 83.8 & 90.6 & 89.5 & 89.7 & 88.4 & 85.4 & 77.3 & \textbf{87.1} \\
+  \hline
+ 1 & 62.8 & 76.8 & 61.7 & 58.9 & 73.6 & 65.0 & 66.2 & 66.2 & 48.2 & 52.8 & \textbf{63.4} \\
+ \hline
+\end{tabular}
+\end{center}
+
+On remarque que la distance tangente permet d’améliorer substantiellement la résistance au bruit de l'algorithme des écarts a la moyenne. Cependant la méthode de décomposition en valeurs singuliers offre des meilleurs résultats, même sur un base bruitée.
 
 \chapter{Test globaux}
 
@@ -312,9 +359,10 @@ Cette performance si bien est plus élevée que celle du premier algorithme, res
 \end{tabular}
 \end{center}
 
+
 \chapter{Conclusion}
 En comparant les résultats obtenus avec ceux de l'ouvrage de référence (Elden, 2007) on remarque que l'on a de meilleurs performances avec les deux premiers algorithmes. On peut expliquer cela par le fait la base que nous avons utilisée est environ 7 fois plus grande et que les images traitées ont une résolution plus élevée ($28\times 28$ par rapport à $16\times 16$ pixels dans l'ouvrage de référence).\\
-Pour l'algorithme des distances tangentes, Elden compare les images à tester à chaque image du jeu d'entraînement. Bien que cela donne de bon résultats, pour l'ensemble de données utilisé et les ressources informatiques à notre disposition, cette implémentation est irréalisable. Nous avons donc implémenté la distance tangente comme une amélioration de l'algorithme des écarts à la moyenne.
+Pour l'algorithme des distances tangentes, Elden compare les images à tester à chaque image du jeu d'entraînement. Bien que cela donne de bon résultats, pour l'ensemble de données utilisé et les ressources informatiques à notre disposition, cette implémentation est irréalisable. Nous avons donc implémenté la distance tangente comme une amélioration de l'algorithme des écarts à la moyenne. 
 
 \bibliographystyle{ieeetr}
 \bibliography{Bibliographie}
