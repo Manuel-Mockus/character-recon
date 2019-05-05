@@ -22,13 +22,13 @@ Nous utiliserons comme référence le travail de Lars Elden "Matrix Methods in D
 Les caractères à analyser seront ici des chiffres de 1 à 9 sous forme de vecteurs de taille $(28\times28,1)$ à valeurs entières comprise entre 0 et 255 : chaque vecteur représente une image de taille $28\times28$ en nuance de gris (0 = noir, blanc = 255). Nous disposons d'une base de données de 70000 chiffres manuscrits labellisés stockés sous le format décrit précédemment.\\
 
 
-Nous avons choisi comme langage de programmation pour notre projet le Python.
+Nous avons choisi Python comme langage de programmation pour notre projet.
 
 \chapter{Pré-traitement des données}
 La base de donnée étant un fichier matlab nous avons dans un premier temps dû la traduire dans un format utilisable sous python. Nous avons choisi comme format de stockage une liste de liste de vecteurs : le $k^{eme}$ élément de cette liste est une liste des vecteurs correspondants au chiffre k.\\
-Nous avons ensuite divisé la base de donnée en quatre afin que chacun des membre du groupe puisse effectuer des tests indépendants. 
+Nous avons ensuite divisé la base de données en quatre afin que chaque membre du groupe puisse effectuer des tests indépendants. 
 
-Les algorithmes étudiés relèvent du domaine de l'apprentissage automatique : après une phase d'apprentissage où l'on donne à l'algorithme des images et leurs chiffres respectifs comme références, on a une phase de traitement où l'algorithme doit reconnaître le chiffre à partir de l'image seule. Pour avoir des résultats pertinents, il faut donc distinguer clairement les données utilisées pour l'apprentissage et celles utilisées pour le traitement.\\Le choix que nous avons fait est donc pour chaque base de donnée individuelle de diviser les données en $20\%$ fixe de données utilisées exclusivement pour les tests et de prendre pour donnée d'apprentissage aléatoirement $50\%$ des données restantes.
+Les algorithmes étudiés relèvent du domaine de l'apprentissage automatique : après une phase d'apprentissage où l'on donne à l'algorithme des images et leurs chiffres respectifs comme références, on a une phase de traitement où l'algorithme doit reconnaître le chiffre à partir de l'image seule. Pour avoir des résultats pertinents, il faut donc distinguer clairement les données utilisées pour l'apprentissage et celles utilisées pour le traitement.\\Le choix que nous avons fait est donc pour chaque base de donnée individuelle de diviser les données en $20\%$ fixe de données utilisées exclusivement pour les tests et de prendre pour données d'apprentissage aléatoirement $50\%$ des données restantes.
 
 
 
@@ -51,7 +51,7 @@ Pour analyser l'efficacité de notre programme nous avons choisi d'observer deux
 Nous avons comparé les taux de réussite de l'algorithme -pour chaque chiffre et en moyenne- pour les normes de Minkowski ($||v||_{n} = \sqrt[\leftroot{-2}\uproot{2} n]{\sum_{k}^{} |v_{k}|^n}$) entre 1 et 10 et pour la norme infinie ($||v||_{\infty} = \displaystyle \max_{k}|v_{k}|$) (table 3.1).
 
 \begin{center}
-\captionof{table}{Pourcentage de chiffres correctement identifiées par norme de Minkowsky}
+\captionof{table}{Pourcentage de chiffres correctement identifiés par norme de Minkowsky}
 \begin{tabular}{ |c||c|c|c|c|c|c|c|c|c|c|c| } 
 \hline
  Norme & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & \textbf{Total} \\ 
@@ -163,7 +163,7 @@ Ainsi on peut définir une nouvelle distance plus simple, à peu près équivale
 Or $\frac{ds}{d\alpha}(I,0)$ est indépendant de $\alpha$, on peut donc le noter $T_{I}$ et ainsi réécrire notre distance ainsi: $$d_{2}(I,P)= min_{\alpha,\beta \in \textbf{R}} ||(I-P)-\begin{pmatrix}-T_{I} & T_{P}\end{pmatrix} \begin{pmatrix}\alpha \\ \beta\end{pmatrix} ||$$ 
 A condition que la norme utilisée soit la norme euclidienne, le calcul de cette distance est un problème des moindres carrés. On le résout grâce au théorème suivant : soit $A$ une matrice de rang plein de décomposition en valeurs singulières $A = U\Sigma V^T$, le problème des moindres carrés $min_x\norm{Ax-b}_2$ a pour unique solution $$x = V\Sigma^{-1}U_1^Tb$$ Ici $A = \begin{pmatrix}-T_{I} & T_{P}\end{pmatrix}$ et $b = (I-P)$.\\
  \\
-Généralisons maintenant cette méthode au cas où l'image I peut avoir subit n transformations continues distinctes. L'espace affine des éléments correspondant aux I transformés, noté $C_{I}$ est alors de dimension n, car il est engendré par n courbes de dimension 1 (on peut à partir de I se déplacer dans $\textbf{R}^{784}$ suivant n courbes pour obtenir un I transformé, on voit bien qu'on peut décrire cet espace avec n paramètres). Soit P un autre élément de $\textbf{R}^{784}$ on souhaiterait comme précédemment pouvoir calculer la distance minimale entre $C_{I}$ et $C_{P}$ mais c'est impossible. On utilise donc à nouveau l'hypothèse que les transformations sont de petite ampleur, et on va approximer $C_{I}$ et $C_{P}$ par leur plans tangents en 0. Soit $\alpha$ dans $\textbf{R}^{n}$,on définit s la fonction tel que s(I,$\alpha$) soit l'élément de $\textbf{R}^{784}$ correspondant à I ayant subit pour tout i inférieur à n, la i-ème transformation avec un coefficient $\alpha_{i}$. $C_{I}$ est alors l'image par f(x)=s(I,x) de $\textbf{R}^{n}$, un développement de Taylor à l'ordre 1 permet alors d'expliciter le plan tangent à $C_{I}$ en 0. Au voisinnage de 0 on a:$$f(x) = s(I,x) \approx I + \sum_{i=1}^{n}\frac{ds}{d\alpha_{i}}(I,0)\alpha_{i}$$ On définit alors la distance tangente entre I et P comme la distance euclidienne minimale entre un point du plan tangent de I et un point du plan tangent de P:$$d_{tangente}(I,P)=min_{\alpha,\beta \in \textbf{R}^{n}}||I-P+\begin{pmatrix}-T_{I} & T_{P}\end{pmatrix} \begin{pmatrix}\alpha \\ \beta\end{pmatrix}||$$ $$\textrm{où $T_{I}$ est la matrice des dérivées partielles de s(I,$\alpha$) selon $\alpha$.}$$\\
+Généralisons maintenant cette méthode au cas où l'image I peut avoir subit n transformations continues distinctes. L'espace affine des éléments correspondant aux I transformés, noté $C_{I}$ est alors de dimension n, car il est engendré par n courbes de dimension 1 (on peut à partir de I se déplacer dans $\textbf{R}^{784}$ suivant n courbes pour obtenir un I transformé, on voit bien qu'on peut décrire cet espace avec n paramètres). Soit P un autre élément de $\textbf{R}^{784}$ on souhaiterait comme précédemment pouvoir calculer la distance minimale entre $C_{I}$ et $C_{P}$ mais c'est impossible. On utilise donc à nouveau l'hypothèse que les transformations sont de petite ampleur, et on va approximer $C_{I}$ et $C_{P}$ par leur plans tangents en 0. Soit $\alpha$ dans $\textbf{R}^{n}$, on définit s la fonction tel que s(I,$\alpha$) soit l'élément de $\textbf{R}^{784}$ correspondant à I ayant subit pour tout i inférieur à n, la i-ème transformation avec un coefficient $\alpha_{i}$. $C_{I}$ est alors l'image par f(x)=s(I,x) de $\textbf{R}^{n}$, un développement de Taylor à l'ordre 1 permet alors d'expliciter le plan tangent à $C_{I}$ en 0. Au voisinnage de 0 on a:$$f(x) = s(I,x) \approx I + \sum_{i=1}^{n}\frac{ds}{d\alpha_{i}}(I,0)\alpha_{i}$$ On définit alors la distance tangente entre I et P comme la distance euclidienne minimale entre un point du plan tangent de I et un point du plan tangent de P:$$d_{tangente}(I,P)=min_{\alpha,\beta \in \textbf{R}^{n}}||I-P+\begin{pmatrix}-T_{I} & T_{P}\end{pmatrix} \begin{pmatrix}\alpha \\ \beta\end{pmatrix}||$$ $$\textrm{où $T_{I}$ est la matrice des dérivées partielles de s(I,$\alpha$) selon $\alpha$.}$$\\
 Il ne reste désormais plus qu'à réaplliquer notre premier algorithme en utilisant cette distance tangente, afin d'obtenr un code insensible aux modifications humaines usuelles.
 
 \subsection{Pratique}
@@ -252,7 +252,7 @@ On calcule pour chaque chiffre la moyenne des images du jeu d'entraînement (com
 
 
 \subsection{Tests}
-Pour vérifier l'efficacité de l'algorithme, nous avons implémenté les différentes transformations à l'aide des modules python de traitement d'image (scipy et openCV) et généré des jeux de tests où chaque image a subi un nombre de transformations aléatoirement choisies. On a ensuite comparé l'efficacité de cet algorithme avec les deux autres algorithmes.\\
+Pour vérifier l'efficacité de l'algorithme, nous avons implémenté les différentes transformations à l'aide des modules python de traitement d'image (scipy et openCV) et généré des jeux de tests où chaque image a subi un certain nombre de transformations aléatoirement choisies. On a ensuite comparé l'efficacité de cet algorithme avec les deux autres algorithmes.\\
 Nous avons crée trois bases de test, avec différentes niveaux de "bruit": chaque image subit une, deux ou trois transformations choisies aléatoirement.
 
 %Tableau test 3 algos
@@ -301,7 +301,7 @@ Nous avons crée trois bases de test, avec différentes niveaux de "bruit": chaq
 \end{tabular}
 \end{center}
 
-On remarque que la distance tangente permet d’améliorer substantiellement la résistance au bruit de l'algorithme des écarts à la moyenne. Cependant la méthode de décomposition en valeurs singulières offre de meilleurs résultats, même sur un base bruitée.
+On remarque que la distance tangente permet d’améliorer substantiellement la résistance au bruit de l'algorithme des écarts à la moyenne. Cependant la méthode de décomposition en valeurs singulières offre de meilleurs résultats, même sur une base bruitée.
 
 \chapter{Test globaux}
 
@@ -309,7 +309,7 @@ Pour tester la performance des algorithmes implémentés on a effectué une sér
 Pour évaluer la complexité en temps de calcul, on a exécuté chaque algorithme sur un ensemble de 1000 images avec les résultats suivants: l'algorithme des écarts à la moyenne prend 0.1 secondes, celui de la décomposition en valeurs singulières 37.7 secondes et celui de la distance tangente 1137.9 secondes (environ 20 minutes).
 
 \subsection{Écarts a la moyenne}
-Pour le premier algorithme nous avons testé 50 fois, obtenant en moyenne des performances (taux d'identification correct) de 83\% pour la norme 2 et 84\% pour la norme 3 (Table 5.1) avec des résultats variées en fonction des chiffres analysés.
+Pour le premier algorithme nous avons testé 50 fois, obtenant en moyenne des performances (taux d'identification correct) de 83\% pour la norme 2 et 84\% pour la norme 3 (Table 5.1) avec des résultats variés en fonction des chiffres analysés.
 
 \begin{center}
 \captionof{table}{Performance Algorithme 1, pour les normes 2 et 3}
@@ -389,8 +389,8 @@ Cette performance est plus élevée que celle du premier algorithme, mais reste 
 
 
 \chapter{Conclusion}
-En comparant les résultats obtenus avec ceux de l'ouvrage de référence (Elden, 2007) on remarque que l'on a de meilleurs performances avec les deux premiers algorithmes. Cela est du à deux facteurs significatifs: la base que nous avons utilisée est environ 7 fois plus grande, et les images traitées ont une résolution plus élevée ($28\times 28$ par rapport à $16\times 16$ pixels dans l'ouvrage de référence).\\
-Pour l'algorithme des distances tangentes, Elden compare les images à tester à chaque image du jeu d'entraînement. Bien que cela donne de bon résultats, pour l'ensemble de données utilisé et les ressources informatiques à notre disposition, cette implémentation est irréalisable. Nous avons donc implémenté la distance tangente comme une amélioration de l'algorithme des écarts à la moyenne. Si l'on disposait d'une plus grande puissance de calcul, on pourrait essayer d'implementer cette algorithme comme une amélioration de la méthode de la svd (en calculant la distance avec l'espace vectoriel des trois au lieu de celle avec la moyenne des trois dans le corps de l'algorithme).\\
+En comparant les résultats obtenus avec ceux de l'ouvrage de référence (Elden, 2007) on remarque que l'on a de meilleures performances avec les deux premiers algorithmes. Cela est du à deux facteurs significatifs: la base que nous avons utilisée est environ 7 fois plus grande, et les images traitées ont une résolution plus élevée ($28\times 28$ par rapport à $16\times 16$ pixels dans l'ouvrage de référence).\\
+Pour l'algorithme des distances tangentes, Elden compare les images à tester à chaque image du jeu d'entraînement. Bien que cela donne de bon résultats, pour l'ensemble de données utilisé et les ressources informatiques à notre disposition, cette implémentation est irréalisable. Nous avons donc implémenté la distance tangente comme une amélioration de l'algorithme des écarts à la moyenne. Si l'on disposait d'une plus grande puissance de calcul, on pourrait essayer d'implementer cette algorithme comme une amélioration de la méthode de la svd (en calculant la distance à l'espace vectoriel du chiffre n au lieu de la distance à la moyenne des n dans le corps de l'algorithme).\\
 Nos tests globaux nous permettent de conclure que pour la reconnaissance des chiffres, l'algorithme basé sur la décomposition en valeurs singulières est celui des trois algorithmes que l'on choisira en pratique. Il donne en effet les meilleurs résutats pour un temps de calcul restant raisonnable.
 
 \bibliographystyle{ieeetr}
