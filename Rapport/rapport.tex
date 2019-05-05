@@ -96,7 +96,7 @@ On remarque pour la norme 1 que les 1 sont toujours correctement identifiés, ma
 \chapter{Deuxième méthode : utilisation de la décomposition en valeurs singulière}
 \subsection{Théorie}
 Étant donné les résultats décevants de notre première méthode, il est nécessaire d'utiliser une autre technique qui prenne en compte les variations entre les différentes images représentant un même chiffre, cette technique repose sur un outil mathématique très puissant: la décomposition en valeurs singulières (SVD par ses initiales en anglais \textit{Singular Value Decomposition}).\\
-Il s'agit ici dans un premier temps, de créer pour chaque chiffre (on parlera ici uniquement des trois pour alléger l'écriture) une matrice A de 784 lignes, comportant autant de colonnes que le nombre de 3 dont on dispose dans notre base d’entraînement. Chaque colonne de cette matrice représente une image de 3. On dispose alors d'un sous espace vectoriel de $\textbf{R}^{784}$ , engendré par les colonnes de A (on appellera cet espace vectoriel "l'espace des trois"). Or le théorème de décomposition en valeurs singulières, nous permet de décomposer cette matrice ainsi: $$A = \sum_{i=1}^{784}{\sigma_{i}u_{i}v_{i}^{T}}$$\\
+Il s'agit ici dans un premier temps, de créer pour chaque chiffre (on parlera ici uniquement des trois pour alléger l'écriture) une matrice A de 784 lignes, comportant autant de colonnes que le nombre de 3 dont on dispose dans notre base d’entraînement. Chaque colonne de cette matrice représente une image de 3. On dispose alors d'un sous espace vectoriel de $\textbf{R}^{784}$ , engendré par les colonnes de A (on appellera cet espace vectoriel "l'espace des trois"). Or le théorème de décomposition en valeurs singulières, nous permet de décomposer cette matrice ainsi: $$A = \sum_{i=1}^{784}{\sigma_{i}u_{i}v_{i}^{T}}$$
 Les $u_{i}$ sont alors une base orthonormée de l'espace des trois. De plus lors d'une SVD, la base est ordonnée de manières à ce que les $\sigma_{i}$ forment une suite décroissante. Les premiers vecteurs u de la SVD sont alors représentatifs de l'espace vectoriel des 3, étant donné que toutes les matrices de la somme sont de norme 1. On peut donc construire un espace des trois réduit ayant pour base (orthonormée) les premiers vecteurs u de la SVD. Ce sous-espace est de faible dimension par rapport à l'espace de dimension 784 dans le quel il vit et il est donc très peu probable qu'il intersecte le sous-espace relatif à un autre chiffre, ce qui garantit que les différents espaces réduits seront bien distincts dans le calcul à venir.\\
 Maintenant qu'on dispose d'un espace vectoriel des 3 réduit (doté d'une base orthonormé), on peut facilement calculer la distance, pour la norme deux, du chiffre non identifié (c'est à dire un vecteur de  $\textbf{R}^{784}$) à cet espace (cela revient à un calcul des moindres carrés). Si on effectue ce calcul pour l'espace correspondant à chaque chiffre on peut alors labelliser l'image, en constatant de quel espace vectoriel elle est le plus proche.
 
@@ -104,7 +104,7 @@ Maintenant qu'on dispose d'un espace vectoriel des 3 réduit (doté d'une base o
 
 Pour cette méthode, nous avons effectué une classification (clustering) plus fine des résultats : si lors de l'analyse d'une image, on ne peut l'identifier de façon décisive à un chiffre, celle-ci est rejetée, ce qui permet d'améliorer le taux d'identification correct parmi les images non rejetées. \\
 Plus précisément, une image $z$ sera rejetée si le minimum $m1$ de l'ensemble des $ \norm{(I-U_{k}U_{k}^{T})z}_{2}$ (les moindres carrés pour chaque chiffre) n'est pas "significativement" plus petit que le deuxième plus petit élément de cet ensemble $m2$ (deux bases de chiffres pourraient alors correspondre à l'image). Pour définir ce "significativement" nous avons introduit un seuil compris entre $0.5$ et $1$ : une image sera rejetée si après le calcul de ses moindres carrés $m1>seuil*m2$. Plus le seuil est bas plus l'on est exigeant : avec un seuil de $1$ aucune image n'est rejetée et avec un seuil de $0.5$ l'évaluation d'une image est jugée concluante seulement si $m1\leq 0.5m2$.
-
+\clearpage
 
 \begin{figure}[H]
 \begin{center}
@@ -124,35 +124,35 @@ Plus précisément, une image $z$ sera rejetée si le minimum $m1$ de l'ensemble
 
 \subsection{Paramètres}
 Nous avons cherché à optimiser cette deuxième méthode en jouant sur deux paramètres : le nombre de vecteurs de base de $U$ choisis $k$ et le seuil.\\
-
 Le premier jeu de test a été effectué pour des valeurs du seuil entre 0.9 et 1 (des valeurs inférieures du seuil donnant un taux de rejet trop élevées env. 20\%) et une valeur de k (nombre de vecteurs de base) entre 1 et 7 (Figure 4.1).\\
 
 \begin{figure}[H]
-  	\includegraphics[width=\linewidth]{"Graphs/3D TP vs Rejected".png}
+  	\includegraphics[width=0.9\linewidth]{"Graphs/3D TP vs Rejected".png}
   	\caption{A gauche, pourcentage d'images correctement identifiées et a droite, pourcentage d'images rejetées en fonction de nombre de vecteurs de base et du seuil de distance minimale}
 \end{figure}
 
 On remarque que quelque soit la base, l'efficacité de l'algorithme évolue approximativement de la même manière en fonction de la valeur du seuil. \\ 
-On peut donc par la suite se permettre d'étudier indépendamment l'influence du seuil et celle du nombre de bases.\\
-
+On peut donc par la suite se permettre d'étudier indépendamment l'influence du seuil et celle du nombre de bases.
 \subsubsection{Seuil}
-
 \begin{figure}[H]
-  	\includegraphics[width=\linewidth]{"Graphs/TP vs Rejected".png}
+  	\includegraphics[width=0.9\linewidth]{"Graphs/TP vs Rejected".png}
   	\caption{Pourcentage de vrai positifs et de rejetés en fonction du niveau du seuil.}
 \end{figure}
 
 On remarque dans la figure 4.2 le pourcentage de vrais positifs et le pourcentages de rejetés sont proportionnelles et linéairement décroissantes en fonction du seuil. On n'a donc pas de choix optimal objectif pour le seuil, on choisira donc le seuil en fonction de la tolérance à l'erreur et le taux de rejet acceptable. 
 
 \subsubsection{Nombre de vecteurs de base}
+
 On remarque que l'efficacité de l'algorithme est croissante en fonction du nombre k de vecteurs de bases pour ceux observés. Cependant après notre analyse théorique, on peut dire que si k devient trop grand, les espaces vectoriels qu'on associe à chaque chiffre (étant de dimension k) ont de fortes chances de s'intersecter (Figure 4.3). Il est donc intéressant de chercher la valeur de k optimale pour notre algorithme.
+
+
+En faisant varier k entre 1 et 30, on remarque que l'efficacité de l'algorithme se stabilise à partir de k=20.De plus le nombre de vecteurs de base $k$ choisi n'influe pas significativement sur la complexité des calculs : en effet seul le calcul de $I-U_{k}U_{k}^{T}$ dépend de $k$ et il est effectué une seule fois pour chaque chiffre. On fixe donc par la suite k=20.
 
 \begin{figure}[H]
   	\includegraphics[width=\linewidth]{"Graphs/test30bases".png}
   	\caption{Performance pour chaque chiffre et en moyenne en fonction du nombre de vecteurs de base. A gauche lorsque le nombre de vecteurs de base est encore faible l'algorithme devient plus performant en augmentant ce paramètre. A droite on assiste à l'effondremment du modèle lorsque le nombre de vecteurs de base est trop élevé et que les espaces relatifs à chacun des nombres s'intersectent.}
 \end{figure}
 
-En faisant varier k entre 1 et 30, on remarque que l'efficacité de l'algorithme se stabilise à partir de k=20.De plus le nombre de vecteurs de base $k$ choisi n'influe pas significativement sur la complexité des calculs : en effet seul le calcul de $I-U_{k}U_{k}^{T}$ dépend de $k$ et il est effectué une seule fois pour chaque chiffre. On fixe donc par la suite k=20.
 
 \chapter{Distance tangente}
 \subsection{Théorie}
