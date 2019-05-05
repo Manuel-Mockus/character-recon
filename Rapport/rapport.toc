@@ -1,4 +1,4 @@
-\select@language {french}
+\babel@toc {french}{}
 \contentsline {chapter}{\numberline {1}Introduction}{3}
 \contentsline {chapter}{\numberline {2}Pr\IeC {\'e}-traitement des donn\IeC {\'e}es}{4}
 \contentsline {chapter}{\numberline {3}Premi\IeC {\`e}re m\IeC {\'e}thode : calcul des \IeC {\'e}carts \IeC {\`a} la moyenne}{5}
