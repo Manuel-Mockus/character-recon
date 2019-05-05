@@ -1,0 +1,121 @@
+ Comparaison des algorithmes pour une base ayant subi 1 transformation:
+Algorithme 1:
+([0.720492396813903, 0.8527918781725888, 0.65379113018598, 0.6263121063680895, 0.7472527472527473, 0.5969912905779889, 0.75, 0.7388622344071282, 0.5714285714285714, 0.6135057471264368, 0.6902313624678663], [[5, 0.3290155440414508], [7, 0.36637931034482757], [1, 0.21487603305785125], [5, 0.24157303370786518], [9, 0.3333333333333333], [3, 0.2691552062868369], [4, 0.2819767441860465], [1, 0.33858267716535434], [5, 0.19316239316239317], [4, 0.3550185873605948], ['N/A', 0.0]])
+Algorithme 2:
+processing digit 0
+processing digit 1
+processing digit 2
+processing digit 3
+processing digit 4
+processing digit 5
+processing digit 6
+processing digit 7
+processing digit 8
+processing digit 9
+[0.9725274725274725, 0.9440273037542662, 0.9395695364238411, 0.9477477477477477, 0.9693617021276596, 0.9473140495867769, 0.9511400651465798, 0.9495268138801262, 0.9134615384615384, 0.9161462979482605, 0.9457704309690478]
+Algorthme 3:
+chiffre  0
+nombre d'images testées pour ce chiffre :  1381
+chiffre  1
+nombre d'images testées pour ce chiffre :  1576
+chiffre  2
+nombre d'images testées pour ce chiffre :  1398
+chiffre  3
+nombre d'images testées pour ce chiffre :  1429
+chiffre  4
+nombre d'images testées pour ce chiffre :  1365
+chiffre  5
+nombre d'images testées pour ce chiffre :  1263
+chiffre  6
+nombre d'images testées pour ce chiffre :  1376
+chiffre  7
+nombre d'images testées pour ce chiffre :  1459
+chiffre  8
+nombre d'images testées pour ce chiffre :  1365
+chiffre  9
+nombre d'images testées pour ce chiffre :  1392
+[0.8479362780593772, 0.9251269035532995, 0.7317596566523605, 0.7844646606018194, 0.8644688644688645, 0.7585114806017419, 0.8597383720930233, 0.8368745716244003, 0.6666666666666666, 0.7291666666666666, 0.8026278206226792]
+
+
+
+
+
+ Comparaison des algorithmes pour une base ayant subi 2 transformations:
+Algorithme 1:
+([0.5887038377986966, 0.7277918781725888, 0.5743919885550787, 0.5178446466060181, 0.6747252747252748, 0.5312747426761678, 0.6119186046511628, 0.6470185058259081, 0.46007326007326005, 0.46264367816091956, 0.5821908026278206], [[5, 0.28169014084507044], [7, 0.30536130536130535], [7, 0.19663865546218487], [5, 0.216255442670537], [1, 0.3333333333333333], [1, 0.23310810810810811], [4, 0.2958801498127341], [1, 0.3145631067961165], [5, 0.19538670284938942], [4, 0.37967914438502676], ['N/A', 0.0]])
+Algorithme 2:
+processing digit 0
+processing digit 1
+processing digit 2
+processing digit 3
+processing digit 4
+processing digit 5
+processing digit 6
+processing digit 7
+processing digit 8
+processing digit 9
+[0.9403114186851211, 0.8753709198813057, 0.912568306010929, 0.9117647058823529, 0.9330855018587361, 0.9362912400455062, 0.9227144203581527, 0.9186241610738255, 0.8878822197055493, 0.8525773195876288, 0.9090055404263311]
+Algorthme 3:
+chiffre  0
+nombre d'images testées pour ce chiffre :  1381
+chiffre  1
+nombre d'images testées pour ce chiffre :  1576
+chiffre  2
+nombre d'images testées pour ce chiffre :  1398
+chiffre  3
+nombre d'images testées pour ce chiffre :  1429
+chiffre  4
+nombre d'images testées pour ce chiffre :  1365
+chiffre  5
+nombre d'images testées pour ce chiffre :  1263
+chiffre  6
+nombre d'images testées pour ce chiffre :  1376
+chiffre  7
+nombre d'images testées pour ce chiffre :  1459
+chiffre  8
+nombre d'images testées pour ce chiffre :  1365
+chiffre  9
+nombre d'images testées pour ce chiffre :  1392
+[0.7335264301230991, 0.8236040609137056, 0.6745350500715308, 0.6906927921623512, 0.7992673992673993, 0.7173396674584323, 0.7390988372093024, 0.7518848526387937, 0.5743589743589743, 0.6214080459770115, 0.7141530991145387]
+
+
+
+
+
+ Comparaison des algorithmes pour une base ayant subi 3 transformations:
+Algorithme 1:
+([0.4699493120926865, 0.6687817258883249, 0.5071530758226037, 0.41287613715885235, 0.6117216117216118, 0.4758511480601742, 0.5072674418604651, 0.5421521590130226, 0.37362637362637363, 0.35272988505747127, 0.49471579548700373], [[5, 0.2581967213114754], [7, 0.3448275862068966], [7, 0.20899854862119013], [5, 0.21811680572109654], [1, 0.3339622641509434], [1, 0.24773413897280966], [4, 0.2949852507374631], [1, 0.312874251497006], [5, 0.25029239766081873], [4, 0.3318534961154273], ['N/A', 0.0]])
+Algorithme 2:
+processing digit 0
+processing digit 1
+processing digit 2
+processing digit 3
+processing digit 4
+processing digit 5
+processing digit 6
+processing digit 7
+processing digit 8
+processing digit 9
+[0.9286412512218963, 0.8241758241758241, 0.903448275862069, 0.838452787258248, 0.9057815845824411, 0.8951310861423221, 0.8970588235294118, 0.8836565096952909, 0.8542199488491049, 0.7733644859813084, 0.8707156995520366]
+Algorthme 3:
+chiffre  0
+nombre d'images testées pour ce chiffre :  1381
+chiffre  1
+nombre d'images testées pour ce chiffre :  1576
+chiffre  2
+nombre d'images testées pour ce chiffre :  1398
+chiffre  3
+nombre d'images testées pour ce chiffre :  1429
+chiffre  4
+nombre d'images testées pour ce chiffre :  1365
+chiffre  5
+nombre d'images testées pour ce chiffre :  1263
+chiffre  6
+nombre d'images testées pour ce chiffre :  1376
+chiffre  7
+nombre d'images testées pour ce chiffre :  1459
+chiffre  8
+nombre d'images testées pour ce chiffre :  1365
+chiffre  9
+nombre d'images testées pour ce chiffre :  1392
+[0.6278059377262853, 0.7677664974619289, 0.617310443490701, 0.5885234429671099, 0.7362637362637363, 0.6500395882818686, 0.6620639534883721, 0.6620973269362577, 0.48205128205128206, 0.5280172413793104, 0.6338903170522708]
